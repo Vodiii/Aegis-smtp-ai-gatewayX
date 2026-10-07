@@ -1,0 +1,40 @@
+services:
+  gateway:
+    build: .
+    container_name: smtp-ai-gateway
+    env_file:
+      - .env
+    environment:
+      ORIGINAL_SMTP_HOST: mailpit-original
+      ORIGINAL_SMTP_PORT: 1025
+      ALERT_SMTP_HOST: mailpit-alert
+      ALERT_SMTP_PORT: 1025
+      DATA_DIR: /app/data
+      DB_PATH: /app/data/gateway.db
+    ports:
+      - "2525:2525"
+      - "8000:8000"
+    volumes:
+      - gateway_data:/app/data
+    depends_on:
+      - mailpit-original
+      - mailpit-alert
+
+  mailpit-original:
+    image: axllent/mailpit:v1.27.8
+    container_name: mailpit-original
+    expose:
+      - "1025"
+    ports:
+      - "8025:8025"
+
+  mailpit-alert:
+    image: axllent/mailpit:v1.27.8
+    container_name: mailpit-alert
+    expose:
+      - "1025"
+    ports:
+      - "8026:8025"
+
+volumes:
+  gateway_data:
