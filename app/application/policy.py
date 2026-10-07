@@ -30,13 +30,24 @@ class PolicyEngine:
             ThreatCategory.OTHER_THREAT: self.settings.other_threat_destination,
         }.get(classification.category)
 
-        if classification.confidence >= threshold and destination:
+        if destination:
+            below_threshold = classification.confidence < threshold
+            review = below_threshold
+            threshold_note = (
+                f"confidence {classification.confidence:.2f} below review threshold {threshold:.2f}"
+                if below_threshold
+                else f"confidence {classification.confidence:.2f} meets threshold {threshold:.2f}"
+            )
             return PolicyDecision(
                 action=Action.DELIVER_AND_ALERT,
                 category=classification.category,
                 confidence=classification.confidence,
                 destination=destination,
-                reason=f"Threat confidence {classification.confidence:.2f} >= threshold {threshold:.2f}; deliver to original recipients and copy to alert mailbox (source={classification.source})",
+                review=review,
+                reason=(
+                    f"Threat classified as {classification.category.value}; {threshold_note}. "
+                    f"Deliver to original recipients and copy to alert mailbox (source={classification.source})"
+                ),
             )
 
         return PolicyDecision(
@@ -44,5 +55,5 @@ class PolicyEngine:
             category=classification.category,
             confidence=classification.confidence,
             review=True,
-            reason=f"Threat confidence {classification.confidence:.2f} below threshold {threshold:.2f}",
+            reason="Threat category has no configured alert destination; deliver to original recipients and flag for review",
         )

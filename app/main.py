@@ -11,7 +11,7 @@ from app.application.processing_service import EmailProcessor
 from app.infrastructure.config import load_config
 from app.infrastructure.database.repository import MessageRepository
 from app.infrastructure.deepseek.client import DeepSeekClient
-from app.milter.gateway import SmtpGatewayHandler
+from app.gateway import SmtpGatewayHandler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 

@@ -38,6 +38,7 @@ class MessageRepository:
                     category TEXT NOT NULL,
                     is_threat INTEGER NOT NULL,
                     confidence REAL NOT NULL,
+                    threat_confidence REAL,
                     reason TEXT NOT NULL,
                     evidence_json TEXT NOT NULL,
                     action TEXT NOT NULL,
@@ -50,6 +51,9 @@ class MessageRepository:
                 )
                 """
             )
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(messages)").fetchall()}
+            if "threat_confidence" not in columns:
+                conn.execute("ALTER TABLE messages ADD COLUMN threat_confidence REAL")
 
     def save(self, record_id: str, raw_message: bytes, email: Any, result: ProcessingResult) -> None:
         raw_path = self.raw_dir / f"{record_id}.eml"
@@ -59,10 +63,10 @@ class MessageRepository:
                 """
                 INSERT INTO messages (
                     id, processed_at, message_id, sender, recipients_json,
-                    subject, category, is_threat, confidence, reason,
+                    subject, category, is_threat, confidence, threat_confidence, reason,
                     evidence_json, action, destination, review,
                     processing_time_ms, raw_path, forward_status, forward_error
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     record_id,
@@ -74,6 +78,7 @@ class MessageRepository:
                     result.classification.category.value,
                     int(result.classification.is_threat),
                     result.classification.confidence,
+                    result.classification.threat_confidence,
                     result.classification.reason,
                     json.dumps(result.classification.evidence, ensure_ascii=False),
                     result.decision.action.value,

@@ -41,13 +41,28 @@ class EmailDocument(BaseModel):
         return [item.strip() for item in value if item and item.strip()]
 
 
+class ThreatAssessment(BaseModel):
+    is_threat: bool
+    confidence: float = Field(ge=0.0, le=1.0)
+    reason: str = ""
+    evidence: list[str] = Field(default_factory=list)
+
+
+class CategoryAssessment(BaseModel):
+    category: ThreatCategory
+    confidence: float = Field(ge=0.0, le=1.0)
+    reason: str = ""
+    evidence: list[str] = Field(default_factory=list)
+
+
 class Classification(BaseModel):
     category: ThreatCategory
     is_threat: bool
     confidence: float = Field(ge=0.0, le=1.0)
     reason: str = ""
     evidence: list[str] = Field(default_factory=list)
-    source: str = "AI"
+    source: str = "AI_TWO_STAGE"
+    threat_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
 
 
 class PolicyDecision(BaseModel):
@@ -78,8 +93,8 @@ class GatewaySettings:
     data_dir: str = "./data"
     db_path: str = "./data/gateway.db"
     mode: str = "ENFORCE"
-    terrorism_threshold: float = 0.80
-    technogenic_threshold: float = 0.80
+    terrorism_threshold: float = 0.70
+    technogenic_threshold: float = 0.60
     illegal_threshold: float = 0.80
     other_threat_threshold: float = 0.75
     terrorism_destination: str = "alerts-terrorism@local.test"

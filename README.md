@@ -1,54 +1,29 @@
-# AI SMTP Gateway — MVP v0.2
+# AI SMTP Gateway — MVP v0.3.6
 
-Minimal hackathon implementation:
+Hackathon MVP: SMTP -> aiosmtpd -> MIME parser -> two-stage DeepSeek classification -> policy -> original delivery + optional alert copy -> SQLite -> FastAPI.
 
-`SMTP -> aiosmtpd -> parser -> DeepSeek/fallback -> policy -> SMTP forwarding / alert copy -> SQLite -> FastAPI`
+## Two-stage AI classification
 
-## Run locally
+1. **Threat Gate**: decides whether the message contains a credible current threat. If not, the message is BENIGN and only goes to the original recipient.
+2. **Threat Category**: only when the first stage says `is_threat=true`, classify into exactly one of `TERRORISM`, `TECHNOGENIC`, `ILLEGAL`, `OTHER_THREAT`.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn app.main:app --reload
-```
+`ILLEGAL` requires a specific unlawful action/intent. A generic personal threat without a distinct unlawful action goes to `OTHER_THREAT`.
 
-SMTP listens on `2525`, API on `8000`.
+A small deterministic signal detector may trigger a focused re-check when the first stage says BENIGN despite very strong threat wording. It does not classify the message by itself.
 
-## Run demo infrastructure
+## Routing
+
+- `BENIGN` / non-threat -> original recipient only.
+- Any confirmed threat -> original recipient **and** configured alert mailbox.
+- Low confidence threat -> still delivered to both; `review=true` is recorded for the dashboard/analyst.
+
+## Run
 
 ```bash
 docker compose up --build
 ```
 
-Original mailbox UI: http://localhost:8025
-Alert mailbox UI: http://localhost:8026
-Gateway API: http://localhost:8000/docs
-Gateway SMTP: localhost:2525
-
-## Test without DeepSeek
-
-The gateway automatically falls back to a small rule-based classifier when no DeepSeek key is configured. For a confident threat, the message is delivered to the original recipient(s) AND copied to the configured alert mailbox.
-
-```bash
-python scripts/send_test_email.py \
-  --subject "Обычное письмо" \
-  --body "Привет, как дела?"
-
-python scripts/send_test_email.py \
-  --subject "Внимание" \
-  --body "Завтра произойдет взрыв на заводе."
-```
-
-## Important
-
-Real API keys belong only in `.env`. Never commit `.env` or paste production keys into chat/Git.
-
-
-## Routing semantics
-
-- `BENIGN` -> original recipient(s) only.
-- Confident threat -> original recipient(s) AND the category-specific alert mailbox.
-- Low-confidence threat -> original recipient(s) with `review=true`.
-- If the alert copy fails after the original was delivered, the message is accepted to avoid source-side retransmission and the audit record is marked `ORIGINAL_SENT_ALERT_FAILED`.
+Original mailbox: http://localhost:8025
+Alert mailbox: http://localhost:8026
+API: http://localhost:8000/docs
+SMTP: localhost:2525
