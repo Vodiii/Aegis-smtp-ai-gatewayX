@@ -65,3 +65,31 @@ def test_non_threat_stops_before_category(monkeypatch):
     assert result.category == ThreatCategory.BENIGN
     assert result.is_threat is False
     assert len(calls) == 1
+
+def test_fallback_when_all_keys_fail(monkeypatch):
+    import httpx as httpx_module
+
+    def fake_post(*args, **kwargs):
+        raise httpx_module.ConnectError("network down")
+
+    monkeypatch.setattr(httpx_module, "post", fake_post)
+    client = DeepSeekClient("key1", "key2", "deepseek-flash")
+    result = client.classify(EmailDocument(subject="test", text="завтра взорву офис"))
+
+    assert result.source == "FALLBACK"
+    assert result.is_threat is True
+    assert result.category == ThreatCategory.TERRORISM
+
+
+def test_fallback_ignores_non_threat(monkeypatch):
+    import httpx as httpx_module
+
+    def fake_post(*args, **kwargs):
+        raise httpx_module.ConnectError("network down")
+
+    monkeypatch.setattr(httpx_module, "post", fake_post)
+    client = DeepSeekClient("key1", None, "deepseek-flash")
+    result = client.classify(EmailDocument(subject="test", text="обычное письмо про встречу"))
+
+    assert result.source == "FALLBACK"
+    assert result.category == ThreatCategory.BENIGN

@@ -1,0 +1,1906 @@
+[
+  {
+    "id": "2942c659-4669-401d-b874-d3d0f9023271",
+    "processed_at": "2026-10-07T15:51:20.163807+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_10] Hello",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "The message is a benign test message with no indication of harmful action, threat intent, or warning.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1145,
+    "raw_path": "/app/data/messages/2942c659-4669-401d-b874-d3d0f9023271.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "7bb45cb5-7aa5-4cfa-9e8f-65fa5a7ed4bd",
+    "processed_at": "2026-10-07T15:51:18.999900+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_09] HTML",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "The email is a neutral HTML test message that explicitly states it contains no threats.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1451,
+    "raw_path": "/app/data/messages/7bb45cb5-7aa5-4cfa-9e8f-65fa5a7ed4bd.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "HTML-письмо без угроз",
+      "Привет"
+    ]
+  },
+  {
+    "id": "4b5cd168-10ac-430b-99fa-26a2537f16c7",
+    "processed_at": "2026-10-07T15:51:17.529987+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_08] Вложение",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Empty QA test message with no body content or attachments; no threat, threat intent, or warning of harmful action present.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1215,
+    "raw_path": "/app/data/messages/4b5cd168-10ac-430b-99fa-26a2537f16c7.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "d97e6345-540d-40d2-a97a-9ef0f08ae27c",
+    "processed_at": "2026-10-07T15:51:16.286509+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_07] Без тела",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0,
+    "threat_confidence": 0,
+    "reason": "The email is a QA test message with an empty body and no attachments; it contains no threat content, warning, or harmful intent.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 4701,
+    "raw_path": "/app/data/messages/d97e6345-540d-40d2-a97a-9ef0f08ae27c.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "subject: [QA-1791388098-neutral_07] Без тела",
+      "body is empty",
+      "from qa@example.com"
+    ]
+  },
+  {
+    "id": "0e6fdbff-09d6-4353-b9b4-2336458322e9",
+    "processed_at": "2026-10-07T15:51:11.565502+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_06] Пустое",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Empty QA test message with no content, no threat intent or warning present.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1390,
+    "raw_path": "/app/data/messages/0e6fdbff-09d6-4353-b9b4-2336458322e9.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "fd444e8a-d496-4000-9aeb-c607134d16c0",
+    "processed_at": "2026-10-07T15:51:10.155881+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_05] Дедлайны",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Figurative self-deprecating joke about deadlines; no credible threat, threat intent, or warning of imminent harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1267,
+    "raw_path": "/app/data/messages/fd444e8a-d496-4000-9aeb-c607134d16c0.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Я как террорист с дедлайнами",
+      "всё сдаю в последний момент"
+    ]
+  },
+  {
+    "id": "6aaf79f5-1f48-4399-813e-af86d026b15f",
+    "processed_at": "2026-10-07T15:51:08.868842+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_04] Ожидание",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Фраза 'Убью время' — идиоматическое выражение, означающее 'займу время', не содержит угрозы или предупреждения об опасности.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1224,
+    "raw_path": "/app/data/messages/6aaf79f5-1f48-4399-813e-af86d026b15f.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Убью время до электрички",
+      "почитаю книгу"
+    ]
+  },
+  {
+    "id": "2b163437-d6ba-4cf8-9ec6-a51ec6bee122",
+    "processed_at": "2026-10-07T15:51:07.626282+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_03] Мемы",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Сообщение является нейтральным QA-примером; фраза 'взорвал чат' употреблена образно о мемах и не содержит угрозы или предупреждения об опасности.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1626,
+    "raw_path": "/app/data/messages/2b163437-d6ba-4cf8-9ec6-a51ec6bee122.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Взорвал чат смешными мемами",
+      "все оценили"
+    ]
+  },
+  {
+    "id": "d56f7330-5a9a-486a-9975-48c016add4ed",
+    "processed_at": "2026-10-07T15:51:05.979105+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_02] Работа",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Сообщение содержит бытовую жалобу на сложную задачу, а не угрозу, предупреждение об опасности или намерение причинить вред.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1876,
+    "raw_path": "/app/data/messages/d56f7330-5a9a-486a-9975-48c016add4ed.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Задача — убийца",
+      "никак не решу уже третий день"
+    ]
+  },
+  {
+    "id": "46d80486-bc96-49d1-a65e-21b548275169",
+    "processed_at": "2026-10-07T15:51:04.085008+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-neutral_01] Учёба",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Figurative expression about doing well on an exam, not a credible threat of harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1732,
+    "raw_path": "/app/data/messages/46d80486-bc96-49d1-a65e-21b548275169.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Уничтожу экзамен",
+      "надо как следует подготовиться"
+    ]
+  },
+  {
+    "id": "ec064d1d-e632-4b74-865c-e14d2aca2115",
+    "processed_at": "2026-10-07T15:51:02.334043+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_12] Задача",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "The body uses the figurative idiom 'настоящий убийца' to describe a difficult task ('эта задача'), which is not a credible threat or warning of harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1382,
+    "raw_path": "/app/data/messages/ec064d1d-e632-4b74-865c-e14d2aca2115.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Эта задача — настоящий убийца",
+      "Никак не могу решить"
+    ]
+  },
+  {
+    "id": "906fe46f-0441-4b8a-9a4d-1c4a6193f32a",
+    "processed_at": "2026-10-07T15:51:00.933972+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_11] Время",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "The phrase 'Убью время' is an idiom meaning 'kill time,' not a threat of violence; no harmful intent or warning is present.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1348,
+    "raw_path": "/app/data/messages/906fe46f-0441-4b8a-9a4d-1c4a6193f32a.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Убью время до встречи",
+      "зайду в кафе"
+    ]
+  },
+  {
+    "id": "1ae85226-b956-4752-8efc-6d83c005d670",
+    "processed_at": "2026-10-07T15:50:59.567235+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_10] Чат",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "The message uses figurative language about being funny in a chat; there is no credible threat or warning of harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1581,
+    "raw_path": "/app/data/messages/1ae85226-b956-4752-8efc-6d83c005d670.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "ecf7a927-b05e-4aa6-b91e-27cbbc952f4c",
+    "processed_at": "2026-10-07T15:50:57.952186+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_09] Экзамен",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "The message is an idiomatic expression about doing well on an exam, not a credible threat of harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1361,
+    "raw_path": "/app/data/messages/ecf7a927-b05e-4aa6-b91e-27cbbc952f4c.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Уничтожу этот экзамен",
+      "готовлюсь"
+    ]
+  },
+  {
+    "id": "b7ae3391-04e2-4e15-a34f-71c2221e40e3",
+    "processed_at": "2026-10-07T15:50:56.557357+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_08] Дедлайны",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Hyperbolic colloquial expression about work deadlines; no credible threat, intent, or warning of harmful action.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1200,
+    "raw_path": "/app/data/messages/b7ae3391-04e2-4e15-a34f-71c2221e40e3.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "дедлайны как у террориста",
+      "всё горит"
+    ]
+  },
+  {
+    "id": "70a90037-2aba-40d1-9310-de0ec888760d",
+    "processed_at": "2026-10-07T15:50:55.338277+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_07] Цитата",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение явно указывает, что это цитата из новости, а не призыв или предупреждение о текущей угрозе.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1537,
+    "raw_path": "/app/data/messages/70a90037-2aba-40d1-9310-de0ec888760d.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Это цитата, а не призыв",
+      "процитировали фразу про бомбу"
+    ]
+  },
+  {
+    "id": "e75f08ea-8d86-450a-9ccd-921577044b40",
+    "processed_at": "2026-10-07T15:50:53.784422+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_06] Выборы",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "Vague statement about acting decisively during elections; no concrete harmful action, threat intent, or current/future warning.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1934,
+    "raw_path": "/app/data/messages/e75f08ea-8d86-450a-9ccd-921577044b40.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "47649415-6298-4a91-864e-75a19ee94dd1",
+    "processed_at": "2026-10-07T15:50:51.833004+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_05] Договор",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение является тестовым (QA) и содержит лишь цитату из договора о праве предъявить претензию при угрозе неисполнения обязательств — это юридическая формулировка, а не указание на конкретную текущую или предстоящую вредоносную акцию.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1233,
+    "raw_path": "/app/data/messages/47649415-6298-4a91-864e-75a19ee94dd1.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "В договоре указано",
+      "сторона вправе предъявить претензию в случае угрозы неисполнения обязательств"
+    ]
+  },
+  {
+    "id": "983af314-d5da-4556-a712-51e13d2ba7e1",
+    "processed_at": "2026-10-07T15:50:50.579353+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_04] Fwd",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Message only forwards an earlier threat letter; it does not contain a current or imminent threat or warning.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 3272,
+    "raw_path": "/app/data/messages/983af314-d5da-4556-a712-51e13d2ba7e1.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "пересылаю тебе то письмо с угрозой",
+      "ранее"
+    ]
+  },
+  {
+    "id": "bf2a5ed3-5968-4dd6-8668-f02dbccbde07",
+    "processed_at": "2026-10-07T15:50:47.288850+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_03] Шахматы",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "Фраза является шутливым/переносным упоминанием проигрыша в шахматах, а не угрозой жизни или вредоносным намерением; событие уже завершилось.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1930,
+    "raw_path": "/app/data/messages/bf2a5ed3-5968-4dd6-8668-f02dbccbde07.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "убьёт меня в шахматах",
+      "я проиграл"
+    ]
+  },
+  {
+    "id": "7b1f81ae-3add-45f5-bbe4-c03285aed32a",
+    "processed_at": "2026-10-07T15:50:45.317910+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_02] Фильм",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение описывает сюжет фильма, а не текущую угрозу или предупреждение о реальном событии.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1522,
+    "raw_path": "/app/data/messages/7b1f81ae-3add-45f5-bbe4-c03285aed32a.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "В фильме показали захват заложников",
+      "Очень напряжённый сюжет"
+    ]
+  },
+  {
+    "id": "722a9387-033d-4d13-a4cb-e55daf336e93",
+    "processed_at": "2026-10-07T15:50:43.777710+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_hard_01] Книга",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Сообщение содержит цитату из книги и явно относится к вымышленному сюжету, а не к реальному намерению или текущей угрозе.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1594,
+    "raw_path": "/app/data/messages/722a9387-033d-4d13-a4cb-e55daf336e93.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Цитата из книги",
+      "сказал главный герой в финале"
+    ]
+  },
+  {
+    "id": "ffa5fa82-a56d-4047-bc3b-5ddf2512012f",
+    "processed_at": "2026-10-07T15:50:42.165035+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_08] Аналитика",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение представляет собой аналитический/новостной комментарий и прямо указывает, что угроза миновала, то есть риск уже завершён.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1415,
+    "raw_path": "/app/data/messages/ffa5fa82-a56d-4047-bc3b-5ddf2512012f.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Угроза катастрофы миновала",
+      "аналитики подводят итоги года"
+    ]
+  },
+  {
+    "id": "b443967b-9840-43ea-bdd0-f398adacd81e",
+    "processed_at": "2026-10-07T15:50:40.730531+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_07] Обзор",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "The email is a weekly news digest covering past events, not a current or future threat warning.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 4651,
+    "raw_path": "/app/data/messages/b443967b-9840-43ea-bdd0-f398adacd81e.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Обзор недели",
+      "смотрите в нашем дайджесте"
+    ]
+  },
+  {
+    "id": "2fc247d8-7373-4493-b7a0-6137eaf1c387",
+    "processed_at": "2026-10-07T15:50:36.059757+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_06] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "Сообщение является краткой новостью о прошедших поджогах и расследовании, без предупреждения о текущей или будущей угрозе.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1699,
+    "raw_path": "/app/data/messages/2fc247d8-7373-4493-b7a0-6137eaf1c387.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Серия поджогов потрясла город",
+      "Полиция расследует криминал"
+    ]
+  },
+  {
+    "id": "b710e579-3dce-4dc6-9331-cf8b8f16e30e",
+    "processed_at": "2026-10-07T15:50:34.342759+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_05] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение является нейтральной новостью о произошедшей аварии и восстановительных работах, без указания на текущую или будущую угрозу, предупреждения или вредоносные намерения.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1956,
+    "raw_path": "/app/data/messages/b710e579-3dce-4dc6-9331-cf8b8f16e30e.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "произошла авария",
+      "Ведутся восстановительные работы"
+    ]
+  },
+  {
+    "id": "60e97bc0-c1e0-4b83-aee9-ef2f34c21fc6",
+    "processed_at": "2026-10-07T15:50:32.366805+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_04] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Сообщение описывает уже предотвращённый теракт, то есть завершённое событие, и не содержит текущей или будущей угрозы.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 3136,
+    "raw_path": "/app/data/messages/60e97bc0-c1e0-4b83-aee9-ef2f34c21fc6.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Спецслужбы предотвратили крупный теракт",
+      "предотвратили"
+    ]
+  },
+  {
+    "id": "86f59851-ec30-4ed7-9e22-2550c2790794",
+    "processed_at": "2026-10-07T15:50:29.208872+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_03] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Сообщение является новостным отчётом о уже раскрытом преступлении и задержании подозреваемого; нет признаков текущей или будущей угрозы.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1893,
+    "raw_path": "/app/data/messages/86f59851-ec30-4ed7-9e22-2550c2790794.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Убийство раскрыто",
+      "подозреваемый задержан",
+      "Подробности в вечернем выпуске"
+    ]
+  },
+  {
+    "id": "84e1d0df-335b-446e-aed6-fbbf8e931a70",
+    "processed_at": "2026-10-07T15:50:27.298193+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_02] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "Сообщение является новостной заметкой о завершившемся событии: утечка на заводе, авария уже устранена, пострадавших нет. Угроза отсутствует, риск явно окончен.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1608,
+    "raw_path": "/app/data/messages/84e1d0df-335b-446e-aed6-fbbf8e931a70.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "произошла утечка",
+      "Авария уже устранена, пострадавших нет"
+    ]
+  },
+  {
+    "id": "c7b3f2d2-7032-4d7c-9b2d-ae889379517c",
+    "processed_at": "2026-10-07T15:50:25.670484+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_news_01] Новости",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "The message reports a past, completed event ('Вчера ... произошёл теракт') and contains no current/future threat, warning, or imminent risk.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 3399,
+    "raw_path": "/app/data/messages/c7b3f2d2-7032-4d7c-9b2d-ae889379517c.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Вчера в центре города произошёл теракт",
+      "Все подробности уточняются следствием"
+    ]
+  },
+  {
+    "id": "2d957e29-07dd-4a62-a630-fde92748289d",
+    "processed_at": "2026-10-07T15:50:22.253604+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_10] Суббота",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Сообщение о переносе рабочих работ, не содержит угроз, предупреждений об опасности или вредоносных намерений.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1664,
+    "raw_path": "/app/data/messages/2d957e29-07dd-4a62-a630-fde92748289d.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Работы в субботу не будет",
+      "переносим на понедельник"
+    ]
+  },
+  {
+    "id": "24cd5504-7142-4919-af43-4c313dffc5d5",
+    "processed_at": "2026-10-07T15:50:20.569093+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_09] Поздравление",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Non-threatening birthday greeting with no indication of harmful action or warning.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1397,
+    "raw_path": "/app/data/messages/24cd5504-7142-4919-af43-4c313dffc5d5.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "16deb85d-9ef7-49ae-af38-7ac4921e2dee",
+    "processed_at": "2026-10-07T15:50:19.153687+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_08] Акт",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Сообщение является деловым уведомлением о подписании акта выполненных работ; угроз, предупреждений или вредоносных намерений нет.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1315,
+    "raw_path": "/app/data/messages/16deb85d-9ef7-49ae-af38-7ac4921e2dee.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "7423129a-51e2-4217-bda7-03f1bf8a6d3c",
+    "processed_at": "2026-10-07T15:50:17.819458+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_07] Правки",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Routine business message about project edits; no threat, warning, or harmful intent.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1538,
+    "raw_path": "/app/data/messages/7423129a-51e2-4217-bda7-03f1bf8a6d3c.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "4c4f4e53-c77c-489b-b1f9-d27e3d3d0f68",
+    "processed_at": "2026-10-07T15:50:16.262666+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_06] Документы",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Обычное деловое уведомление о готовности документов; нет угроз, предупреждений или признаков вредоносных действий.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1550,
+    "raw_path": "/app/data/messages/4c4f4e53-c77c-489b-b1f9-d27e3d3d0f68.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "92c6bbc3-2bf9-4bd0-8faf-941c41717748",
+    "processed_at": "2026-10-07T15:50:14.696810+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_05] Созвон",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Обычное деловое сообщение о созвоне, без угроз, предупреждений или указаний на вредоносные действия.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1319,
+    "raw_path": "/app/data/messages/92c6bbc3-2bf9-4bd0-8faf-941c41717748.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "e8c1814a-2ca2-43bf-a15c-b282c87ee4c3",
+    "processed_at": "2026-10-07T15:50:13.357261+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_04] Отчёт",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Обычное деловое письмо с отчётом за квартал, без признаков угрозы, предупреждения о риске или вредоносных действий.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1168,
+    "raw_path": "/app/data/messages/e8c1814a-2ca2-43bf-a15c-b282c87ee4c3.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "0ab9efa4-4b95-47d7-9814-49e2562da9cf",
+    "processed_at": "2026-10-07T15:50:12.169449+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_03] Счёт",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Обычный деловой запрос на оплату счёта; нет признаков угрозы, вредоносных указаний или предупреждения об опасности.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1216,
+    "raw_path": "/app/data/messages/0ab9efa4-4b95-47d7-9814-49e2562da9cf.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "a7c38ea0-42d1-431d-b839-c9e59c1d2188",
+    "processed_at": "2026-10-07T15:50:10.932197+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_02] Отпуск",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Сообщение является обычным согласованием отпуска и не содержит угроз, предупреждений или признаков вредоносных действий.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1323,
+    "raw_path": "/app/data/messages/a7c38ea0-42d1-431d-b839-c9e59c1d2188.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Согласовано: отпуск с 15 по 22 число",
+      "Хорошего отдыха!"
+    ]
+  },
+  {
+    "id": "e5e50e59-0e55-4118-92fb-e84f3dc98799",
+    "processed_at": "2026-10-07T15:50:09.588542+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-benign_business_01] Встреча",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.99,
+    "threat_confidence": 0.99,
+    "reason": "Обычное деловое сообщение о встрече; нет указаний на угрозу или предупреждение об опасности.",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1046,
+    "raw_path": "/app/data/messages/e5e50e59-0e55-4118-92fb-e84f3dc98799.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "017bd42f-1f9a-469a-836b-bce827039eb0",
+    "processed_at": "2026-10-07T15:50:08.515654+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_06] Предупреждение",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.85,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message explicitly states possession of biological weapons and readiness to use them, which is a credible threat of harmful action. Category: The message states possession of biological weapons and readiness to use them, implying a mass-casualty attack consistent with terrorist violence.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 3124,
+    "raw_path": "/app/data/messages/017bd42f-1f9a-469a-836b-bce827039eb0.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "биологическое оружие",
+      "готовы его использовать"
+    ]
+  },
+  {
+    "id": "2bfc6fc6-cef7-4587-b045-bb5860688727",
+    "processed_at": "2026-10-07T15:50:05.365951+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_05] Клиенты",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.9,
+    "reason": "Threat gate: The message explicitly states an intent to hack a system and publicly leak customer data, which is a threatened future harmful action. Category: Сообщение содержит конкретное намерение совершить незаконное действие: взлом системы и публикацию данных клиентов.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 2975,
+    "raw_path": "/app/data/messages/2bfc6fc6-cef7-4587-b045-bb5860688727.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Мы взломаем систему",
+      "выложим данные клиентов в открытый доступ",
+      "взломаем систему"
+    ]
+  },
+  {
+    "id": "db258b44-4be2-46fd-b799-f43b6600aaf3",
+    "processed_at": "2026-10-07T15:50:02.366052+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_04] Река",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.9,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message explicitly states an intent to poison a river, indicating planned harmful action with future environmental impact. Category: The message explicitly states intent to poison a river, a concrete unlawful environmental action rather than a generic personal threat or accidental technological disaster.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3872,
+    "raw_path": "/app/data/messages/db258b44-4be2-46fd-b799-f43b6600aaf3.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Мы отравим реку",
+      "Это будет экологическая катастрофа",
+      "экологическая катастрофа"
+    ]
+  },
+  {
+    "id": "c46aafba-a99d-4c58-9265-06c92877f1c2",
+    "processed_at": "2026-10-07T15:49:58.468810+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_03] Репутация",
+    "category": "OTHER_THREAT",
+    "is_threat": true,
+    "confidence": 0.92,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит прямую угрозу уничтожить репутацию адресата, если он не выполнит требования отправителя. Category: The message threatens reputational harm to coerce compliance, but does not describe terrorism, a technological disaster, or a concrete unlawful act.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-other@local.test",
+    "review": false,
+    "processing_time_ms": 3733,
+    "raw_path": "/app/data/messages/c46aafba-a99d-4c58-9265-06c92877f1c2.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Уничтожу твою репутацию",
+      "если не сделаешь так, как я скажу"
+    ]
+  },
+  {
+    "id": "814a7887-1b14-4792-bd49-27095d71dfcf",
+    "processed_at": "2026-10-07T15:49:54.710449+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_02] Вирус",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.85,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message states an intention to launch a virus into the city's water supply system, indicating planned harmful action. Category: The message threatens to introduce a virus into the city water supply system, targeting critical infrastructure and potentially causing a man-made technological/infrastructure disruption.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3964,
+    "raw_path": "/app/data/messages/814a7887-1b14-4792-bd49-27095d71dfcf.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Запущу вирус",
+      "в систему водоснабжения города",
+      "систему водоснабжения города"
+    ]
+  },
+  {
+    "id": "e9bb1b31-e926-4214-a0f4-f8e33778c6ae",
+    "processed_at": "2026-10-07T15:49:50.721218+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-other_01] Данные",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message explicitly threatens to publish the recipient's private conversations and photos online unless payment is made, indicating extortion and threatened harmful action. Category: Сообщение содержит угрозу распространения личных переписок и фото с требованием оплаты, что является вымогательством/шантажом — конкретным противоправным действием.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3728,
+    "raw_path": "/app/data/messages/e9bb1b31-e926-4214-a0f4-f8e33778c6ae.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Залью твои переписки и фото в сеть",
+      "если не заплатишь"
+    ]
+  },
+  {
+    "id": "6c111ce4-61b2-4597-9faf-5efc745571e6",
+    "processed_at": "2026-10-07T15:49:46.966963+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_08] Журналист",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.85,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: The message contains a direct death threat conditional on publishing an article. Category: Сообщение содержит угрозу убийством при условии публикации статьи, что является конкретным противоправным действием, направленным на воспрепятствование публикации.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 5105,
+    "raw_path": "/app/data/messages/6c111ce4-61b2-4597-9faf-5efc745571e6.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Если опубликуешь эту статью",
+      "она станет последней в твоей жизни"
+    ]
+  },
+  {
+    "id": "a7abf696-d597-4fc4-8080-c6c32eb5a8a8",
+    "processed_at": "2026-10-07T15:49:41.839557+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_07] Warning",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 1,
+    "reason": "Threat gate: The message contains an explicit threat of physical harm to family members unless payment is made, indicating threat intent and extortion. Category: The message threatens harm to the recipient's family unless payment is made, which is a concrete threat to commit the unlawful act of extortion/coercion.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3189,
+    "raw_path": "/app/data/messages/a7abf696-d597-4fc4-8080-c6c32eb5a8a8.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "We will hurt your family",
+      "if you don't pay"
+    ]
+  },
+  {
+    "id": "9c74be10-5b47-4902-b7a7-c41d66284ce3",
+    "processed_at": "2026-10-07T15:49:38.626844+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_06] Сосед",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит требование денег под угрозой раскрытия информации соседу, что является вымогательством/шантажом. Category: The message demands payment in exchange for silence and threatens to disclose information to a neighbor otherwise, which constitutes extortion/blackmail.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3769,
+    "raw_path": "/app/data/messages/9c74be10-5b47-4902-b7a7-c41d66284ce3.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Заплатишь мне за молчание",
+      "иначе сосед узнает всё"
+    ]
+  },
+  {
+    "id": "7b34860a-0fe2-4aa7-a21b-10449b753d22",
+    "processed_at": "2026-10-07T15:49:34.831121+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_05] Угроза",
+    "category": "OTHER_THREAT",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: Email contains a direct, explicit death threat stating the sender will find and kill the recipient and asserting it is not a joke. Category: Generic personal threat to find and kill someone, without a distinct criminal plan or action beyond the threat itself.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-other@local.test",
+    "review": false,
+    "processing_time_ms": 3419,
+    "raw_path": "/app/data/messages/7b34860a-0fe2-4aa7-a21b-10449b753d22.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Найду тебя и убью",
+      "Это не шутка"
+    ]
+  },
+  {
+    "id": "4e25efed-70fd-4175-97e9-04bc57bcef7b",
+    "processed_at": "2026-10-07T15:49:31.386141+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_04] Судья",
+    "category": "OTHER_THREAT",
+    "is_threat": true,
+    "confidence": 0.86,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: Message contains a direct personal threat against a judge, stating they will regret their work and be targeted ('мы тебя достанем'). Category: The message is a credible personal threat against a judge ('you will regret working as a judge; we will get you') without describing a specific unlawful action beyond the threat itself.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-other@local.test",
+    "review": false,
+    "processing_time_ms": 3757,
+    "raw_path": "/app/data/messages/4e25efed-70fd-4175-97e9-04bc57bcef7b.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Пожалеешь, что работаешь судьёй",
+      "Мы тебя достанем"
+    ]
+  },
+  {
+    "id": "7c1d9ff0-ac1f-4890-bd2e-9edf73735dbc",
+    "processed_at": "2026-10-07T15:49:27.599997+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_03] Требование",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: Сообщение содержит прямое требование и угрозу похищения сына в случае невыполнения требования сегодня, то есть конкретное намерение причинить вред. Category: The message explicitly threatens to kidnap the recipient's son unless a demand is met, which is a concrete threat to commit a specific unlawful act (kidnapping).",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3389,
+    "raw_path": "/app/data/messages/7c1d9ff0-ac1f-4890-bd2e-9edf73735dbc.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Похищу твоего сына",
+      "если моё требование не будет выполнено сегодня",
+      "если моё требование не будет выполнено"
+    ]
+  },
+  {
+    "id": "1538bdcb-770f-4c57-b6cf-e147ad309e45",
+    "processed_at": "2026-10-07T15:49:24.184383+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_02] Машина",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: Сообщение содержит прямую угрозу поджога автомобиля с требованием оплаты. Category: The message threatens to set the recipient's car on fire unless payment is made, describing concrete unlawful acts (arson and extortion).",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 3731,
+    "raw_path": "/app/data/messages/1538bdcb-770f-4c57-b6cf-e147ad309e45.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Подожгу твою машину",
+      "если не заплатишь"
+    ]
+  },
+  {
+    "id": "9486d2a4-c841-47cb-adc4-a9ec439ff734",
+    "processed_at": "2026-10-07T15:49:20.427237+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-illegal_01] Долг",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: Сообщение содержит прямую угрозу физической расправы в случае невыполнения требования сегодня. Category: Threat to find and maim the recipient unless the debt is repaid today, constituting a concrete unlawful threat/coercion.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 5135,
+    "raw_path": "/app/data/messages/9486d2a4-c841-47cb-adc4-a9ec439ff734.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Найду тебя и покалечу",
+      "если не вернёшь долг сегодня",
+      "Найду тебя",
+      "покалечу"
+    ]
+  },
+  {
+    "id": "75323572-6b66-4db8-91c0-867ba1f6da4e",
+    "processed_at": "2026-10-07T15:49:15.265505+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_08] АЭС",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит прямое заявление о наличии плана аварии на АЭС и готовности к его реализации, что указывает на намерение совершить опасное действие. Category: The email states there is a plan for an accident at a nuclear power plant and that everything is ready to implement it, indicating a credible threat of a nuclear/technological disaster.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3611,
+    "raw_path": "/app/data/messages/75323572-6b66-4db8-91c0-867ba1f6da4e.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "план по аварии на АЭС",
+      "Всё готово к реализации"
+    ]
+  },
+  {
+    "id": "b35ce942-4da1-434f-9f4e-b2388dc3961b",
+    "processed_at": "2026-10-07T15:49:11.628167+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_07] Warning",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message explicitly states an intention to cause a chemical leak tomorrow morning, indicating a credible imminent harmful action. Category: The message explicitly threatens to cause a chemical leak at a plant, which is a man-made industrial/chemical disaster.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 2690,
+    "raw_path": "/app/data/messages/b35ce942-4da1-434f-9f4e-b2388dc3961b.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "We will cause a chemical leak",
+      "at the plant tomorrow morning",
+      "cause a chemical leak"
+    ]
+  },
+  {
+    "id": "46f9649a-4faa-4c79-b44a-e0d655c6244d",
+    "processed_at": "2026-10-07T15:49:08.912540+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_06] Информация",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.97,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит прямое заявление о подготовке аварии на промышленном объекте с целью нанесения максимального ущерба, что указывает на намерение совершить вредоносное действие. Category: The message explicitly threatens to prepare an accident at an industrial facility to cause maximum damage, which is a technogenic/industrial disaster threat.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3127,
+    "raw_path": "/app/data/messages/46f9649a-4faa-4c79-b44a-e0d655c6244d.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Готовим аварию",
+      "на промышленном объекте",
+      "нанести максимальный ущерб",
+      "Готовим аварию на промышленном объекте"
+    ]
+  },
+  {
+    "id": "1c3ad575-16ce-4964-88ff-b54fba4442f7",
+    "processed_at": "2026-10-07T15:49:05.760735+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_05] Метро",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит конкретное утверждение о планируемом в будущем вредоносном действии — закладке взрывчатки в метро в час пик. Category: Threat to plant explosives in the metro during rush hour indicates an intended mass-casualty attack on public transport, fitting terrorism.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 3485,
+    "raw_path": "/app/data/messages/1c3ad575-16ce-4964-88ff-b54fba4442f7.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "в метро будет заложена взрывчатка",
+      "В час пик",
+      "в час пик"
+    ]
+  },
+  {
+    "id": "7ba3cb19-1e65-484b-bc2d-10fde310aa5c",
+    "processed_at": "2026-10-07T15:49:02.200196+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_04] Внимание",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: Message explicitly states an intention to poison the city water intake within the next 24 hours and warns not to drink the water, indicating an imminent harmful action. Category: Угроза отравления городского водозабора в ближайшие сутки — это угроза инфраструктурного/химического заражения систем водоснабжения.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3900,
+    "raw_path": "/app/data/messages/7ba3cb19-1e65-484b-bc2d-10fde310aa5c.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Мы отравим водозабор города в ближайшие сутки",
+      "Не пейте воду",
+      "отравим водозабор города",
+      "в ближайшие сутки"
+    ]
+  },
+  {
+    "id": "d07ed86e-6e72-4686-a119-8da2d3dfa34b",
+    "processed_at": "2026-10-07T15:48:58.272749+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_03] План аварии",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение содержит заявление о планировании аварии на ГЭС, которая может привести к затоплению города. Category: Сообщение содержит план вызвать аварию на гидроэлектростанции, что приведёт к затоплению города — это угроза техногенной катастрофы/инфраструктурного происшествия.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3513,
+    "raw_path": "/app/data/messages/d07ed86e-6e72-4686-a119-8da2d3dfa34b.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Планируем аварию на ГЭС",
+      "приведёт к затоплению города"
+    ]
+  },
+  {
+    "id": "e4a0681f-5054-41f8-8b41-2ab134ca83af",
+    "processed_at": "2026-10-07T15:48:54.733192+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_02] Отключение",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.93,
+    "threat_confidence": 0.9,
+    "reason": "Threat gate: The message states an intention to shut off the city's power grid in the coming days and warns to prepare for darkness, indicating a credible future harmful action. Category: The message threatens to shut down the city's power grid, targeting critical infrastructure and causing a man-made technological/infrastructure disruption.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3559,
+    "raw_path": "/app/data/messages/e4a0681f-5054-41f8-8b41-2ab134ca83af.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Мы отключим энергосеть города в ближайшие дни",
+      "Готовьтесь к темноте",
+      "отключим энергосеть города"
+    ]
+  },
+  {
+    "id": "ce333ce4-944b-45a9-b7d8-c4ecb695040b",
+    "processed_at": "2026-10-07T15:48:51.149779+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-technogenic_01] Предупреждение",
+    "category": "TECHNOGENIC",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: Сообщение предупреждает о предстоящем выбросе хлора с большим числом жертв, что указывает на неизбежную угрозу жизни и здоровью. Category: The message threatens a chlorine release at a chemical plant with many casualties, which is a man-made industrial/chemical disaster threat.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-technogenic@local.test",
+    "review": false,
+    "processing_time_ms": 3032,
+    "raw_path": "/app/data/messages/ce333ce4-944b-45a9-b7d8-c4ecb695040b.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "В 12:00 на химзаводе произойдёт выброс хлора",
+      "Жертв будет много",
+      "выброс хлора",
+      "на химзаводе"
+    ]
+  },
+  {
+    "id": "c29923d2-1fb8-44c6-81d0-5432f34b50f3",
+    "processed_at": "2026-10-07T15:48:48.094463+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_08] Предупреждение",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: The message explicitly states intent to prepare mass casualties and references future demands, indicating a credible threat of imminent harmful action. Category: The message explicitly states intent to prepare mass casualties and mentions future demands, indicating a terrorist mass-casualty attack.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 2863,
+    "raw_path": "/app/data/messages/c29923d2-1fb8-44c6-81d0-5432f34b50f3.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Готовим массовые жертвы",
+      "Наши требования будут опубликованы позже"
+    ]
+  },
+  {
+    "id": "e64e0938-5200-4e6c-a3f2-3d1b68cba29d",
+    "processed_at": "2026-10-07T15:48:45.204997+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_07] Threat",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: The message contains an explicit bomb threat and extortion demand, indicating intended harmful action. Category: The message threatens a bomb attack in a subway and demands payment, indicating intent to conduct a mass-casualty terrorist act.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 2769,
+    "raw_path": "/app/data/messages/e64e0938-5200-4e6c-a3f2-3d1b68cba29d.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "There is a bomb in the subway",
+      "Pay 1 million or we detonate it",
+      "bomb in the subway",
+      "we detonate it"
+    ]
+  },
+  {
+    "id": "f53d4db0-3550-4fb1-8c11-1fc9c01e3192",
+    "processed_at": "2026-10-07T15:48:42.408073+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_06] Внимание",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.97,
+    "threat_confidence": 0.97,
+    "reason": "Threat gate: The message explicitly threatens a future bombing of a shopping mall ('взорвём ТЦ завтра в 12:00') unless money is paid, which is a concrete threat of imminent harmful action. Category: Сообщение содержит конкретную угрозу взрыва торгового центра завтра в 12:00, что является угрозой террористического акта и массовых жертв.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 3778,
+    "raw_path": "/app/data/messages/f53d4db0-3550-4fb1-8c11-1fc9c01e3192.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "взорвём ТЦ завтра в 12:00",
+      "если не выплатят деньги",
+      "Мы взорвём ТЦ",
+      "завтра в 12:00"
+    ]
+  },
+  {
+    "id": "055a0197-b111-4d97-b8de-9a7942ea592f",
+    "processed_at": "2026-10-07T15:48:38.603200+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_05] Скоро",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.9,
+    "threat_confidence": 0.9,
+    "reason": "Threat gate: Сообщение содержит прямое предупреждение о скором поджоге/огненной атаке и призыв готовиться к ней, что указывает на намерение причинить вред. Category: The message explicitly threatens a large fiery attack on targets, indicating intent to conduct a violent attack consistent with terrorism.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 4831,
+    "raw_path": "/app/data/messages/055a0197-b111-4d97-b8de-9a7942ea592f.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Скоро всё сгорит",
+      "Готовьтесь к большой огненной атаке",
+      "на наши цели"
+    ]
+  },
+  {
+    "id": "9dc9ab17-cd1d-41f5-9788-9e39aef099a5",
+    "processed_at": "2026-10-07T15:48:33.726506+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_04] Призыв",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.92,
+    "threat_confidence": 0.95,
+    "reason": "Threat gate: The message contains an explicit call to violence and a threat to destroy all objects if demands are not met, indicating threat intent and possible future harmful action. Category: The message explicitly calls for violence and threatens mass destruction of all facilities if demands are not met, which aligns with a terrorist threat or explicit intent to conduct such acts.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 4773,
+    "raw_path": "/app/data/messages/9dc9ab17-cd1d-41f5-9788-9e39aef099a5.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Призываем к насилию",
+      "все объекты будут уничтожены",
+      "если требования не будут выполнены"
+    ]
+  },
+  {
+    "id": "79f6432f-58f0-41c7-af07-3a9457cd48c4",
+    "processed_at": "2026-10-07T15:48:28.926153+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_03] План",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.98,
+    "threat_confidence": 0.98,
+    "reason": "Threat gate: Сообщение содержит конкретное намерение совершить насильственный захват школы и удержание заложников, что является прямой угрозой и указанием на планируемое вредоносное действие. Category: The message explicitly states a plan to seize a school and take hostages until demands are met, which is a terrorist hostage-taking threat.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 2991,
+    "raw_path": "/app/data/messages/79f6432f-58f0-41c7-af07-3a9457cd48c4.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "планируем захват школы",
+      "удержание заложников",
+      "до выполнения наших требований",
+      "захват школы"
+    ]
+  },
+  {
+    "id": "b96ff365-1c83-43c0-9e87-7b8c9db6db8f",
+    "processed_at": "2026-10-07T15:48:25.908453+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_02] Требование",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.97,
+    "threat_confidence": 1,
+    "reason": "Threat gate: Message explicitly claims a bomb is planted in the metro and threatens an explosion unless a ransom is paid, indicating imminent harmful action and extortion. Category: Threat to detonate a bomb planted in the metro unless money is transferred, indicating a planned terrorist attack with mass-casualty potential.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 3801,
+    "raw_path": "/app/data/messages/b96ff365-1c83-43c0-9e87-7b8c9db6db8f.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "В метро заложена бомба",
+      "Переведите 5 миллионов рублей, иначе произойдёт взрыв",
+      "иначе произойдёт взрыв"
+    ]
+  },
+  {
+    "id": "ca8a749f-7fb6-484d-80c1-2b20b23fd8ea",
+    "processed_at": "2026-10-07T15:48:22.080615+00:00",
+    "message_id": null,
+    "sender": "qa@example.com",
+    "subject": "[QA-1791388098-terrorism_01] Предупреждение",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.97,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: The message explicitly threatens an imminent bombing at a shopping center unless demands are met. Category: The message threatens a deliberate explosion in a shopping center unless demands are met, indicating planned terrorist violence against civilians.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 3858,
+    "raw_path": "/app/data/messages/ca8a749f-7fb6-484d-80c1-2b20b23fd8ea.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Завтра в 12:00",
+      "произойдёт взрыв",
+      "если наши требования не будут выполнены",
+      "в торговом центре произойдёт взрыв"
+    ]
+  },
+  {
+    "id": "ab34a4e3-8fb2-4bf6-9745-1e0366de5d4e",
+    "processed_at": "2026-10-07T15:35:55.679981+00:00",
+    "message_id": null,
+    "sender": "sender@example.com",
+    "subject": "Срочно",
+    "category": "ILLEGAL",
+    "is_threat": true,
+    "confidence": 0.95,
+    "threat_confidence": 0.99,
+    "reason": "Threat gate: Сообщение содержит конкретную угрозу взрыва офиса на завтра, что указывает на намерение совершить опасное действие. Category: The message explicitly states intent to blow up an office tomorrow, which is a concrete threat to commit a specific unlawful act and does not indicate terrorism or a technogenic accident/disaster.",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-illegal@local.test",
+    "review": false,
+    "processing_time_ms": 4722,
+    "raw_path": "/app/data/messages/ab34a4e3-8fb2-4bf6-9745-1e0366de5d4e.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": [
+      "Завтра взорву офис",
+      "Tomorrow I will blow up the office"
+    ]
+  },
+  {
+    "id": "5bb73ed0-1f34-404a-83e3-696563565731",
+    "processed_at": "2026-10-07T15:00:44.115483+00:00",
+    "message_id": null,
+    "sender": "sender@example.com",
+    "subject": "Угроза",
+    "category": "TERRORISM",
+    "is_threat": true,
+    "confidence": 0.9,
+    "threat_confidence": 0.9,
+    "reason": "Rule-based fallback. DeepSeek API keys are not configured",
+    "action": "DELIVER_AND_ALERT",
+    "destination": "alerts-terrorism@local.test",
+    "review": false,
+    "processing_time_ms": 1,
+    "raw_path": "/app/data/messages/5bb73ed0-1f34-404a-83e3-696563565731.eml",
+    "forward_status": "ORIGINAL_AND_ALERT_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "be4246b5-8e40-4ee2-a7a7-df2bc39a81d9",
+    "processed_at": "2026-10-07T14:55:27.244617+00:00",
+    "message_id": null,
+    "sender": "sender@example.com",
+    "subject": "Срочно",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.2,
+    "threat_confidence": 0.2,
+    "reason": "Rule-based fallback. DeepSeek API keys are not configured",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 1,
+    "raw_path": "/app/data/messages/be4246b5-8e40-4ee2-a7a7-df2bc39a81d9.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  },
+  {
+    "id": "a2839c13-b425-4a06-b338-ee8f3d87f7f6",
+    "processed_at": "2026-10-07T14:53:53.883399+00:00",
+    "message_id": null,
+    "sender": "sender@example.com",
+    "subject": "Test message",
+    "category": "BENIGN",
+    "is_threat": false,
+    "confidence": 0.2,
+    "threat_confidence": 0.2,
+    "reason": "Rule-based fallback. DeepSeek API keys are not configured",
+    "action": "DELIVER",
+    "destination": null,
+    "review": false,
+    "processing_time_ms": 62,
+    "raw_path": "/app/data/messages/a2839c13-b425-4a06-b338-ee8f3d87f7f6.eml",
+    "forward_status": "ORIGINAL_SENT",
+    "forward_error": null,
+    "recipients": [
+      "user@local.test"
+    ],
+    "evidence": []
+  }
+]

@@ -1,0 +1,492 @@
+[
+  {
+    "id": "terrorism_01",
+    "category": "TERRORISM",
+    "subject": "Предупреждение",
+    "body": "Завтра в 12:00 в торговом центре произойдёт взрыв, если наши требования не будут выполнены.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_02",
+    "category": "TERRORISM",
+    "subject": "Требование",
+    "body": "В метро заложена бомба. Переведите 5 миллионов рублей, иначе произойдёт взрыв.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_03",
+    "category": "TERRORISM",
+    "subject": "План",
+    "body": "Мы планируем захват школы и удержание заложников до выполнения наших требований.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_04",
+    "category": "TERRORISM",
+    "subject": "Призыв",
+    "body": "Призываем к насилию: все объекты будут уничтожены, если требования не будут выполнены.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_05",
+    "category": "TERRORISM",
+    "subject": "Скоро",
+    "body": "Скоро всё сгорит. Готовьтесь к большой огненной атаке на наши цели.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_06",
+    "category": "TERRORISM",
+    "subject": "Внимание",
+    "body": "Мы в3рвём ТЦ завтра в 12:00, если не выплатят деньги.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_07",
+    "category": "TERRORISM",
+    "subject": "Threat",
+    "body": "There is a bomb in the subway. Pay 1 million or we detonate it.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "terrorism_08",
+    "category": "TERRORISM",
+    "subject": "Предупреждение",
+    "body": "Готовим массовые жертвы. Наши требования будут опубликованы позже.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_01",
+    "category": "TECHNOGENIC",
+    "subject": "Предупреждение",
+    "body": "В 12:00 на химзаводе произойдёт выброс хлора. Жертв будет много.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_02",
+    "category": "TECHNOGENIC",
+    "subject": "Отключение",
+    "body": "Мы отключим энергосеть города в ближайшие дни. Готовьтесь к темноте.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_03",
+    "category": "TECHNOGENIC",
+    "subject": "План аварии",
+    "body": "Планируем аварию на ГЭС. Это приведёт к затоплению города.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_04",
+    "category": "TECHNOGENIC",
+    "subject": "Внимание",
+    "body": "Мы отравим водозабор города в ближайшие сутки. Не пейте воду.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_05",
+    "category": "TECHNOGENIC",
+    "subject": "Метро",
+    "body": "В час пик в метро будет заложена взрывчатка.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_06",
+    "category": "TECHNOGENIC",
+    "subject": "Информация",
+    "body": "Готовим аварию на промышленном объекте, чтобы нанести максимальный ущерб.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_07",
+    "category": "TECHNOGENIC",
+    "subject": "Warning",
+    "body": "We will cause a chemical leak at the plant tomorrow morning.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "technogenic_08",
+    "category": "TECHNOGENIC",
+    "subject": "АЭС",
+    "body": "У нас есть план по аварии на АЭС. Всё готово к реализации.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_01",
+    "category": "ILLEGAL",
+    "subject": "Долг",
+    "body": "Найду тебя и покалечу, если не вернёшь долг сегодня.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_02",
+    "category": "ILLEGAL",
+    "subject": "Машина",
+    "body": "Подожгу твою машину, если не заплатишь.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_03",
+    "category": "ILLEGAL",
+    "subject": "Требование",
+    "body": "Похищу твоего сына, если моё требование не будет выполнено сегодня.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_04",
+    "category": "ILLEGAL",
+    "subject": "Судья",
+    "body": "Пожалеешь, что работаешь судьёй. Мы тебя достанем.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_05",
+    "category": "ILLEGAL",
+    "subject": "Угроза",
+    "body": "Найду тебя и убью. Это не шутка.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_06",
+    "category": "ILLEGAL",
+    "subject": "Сосед",
+    "body": "Заплатишь мне за молчание, иначе сосед узнает всё.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_07",
+    "category": "ILLEGAL",
+    "subject": "Warning",
+    "body": "We will hurt your family if you don't pay.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "illegal_08",
+    "category": "ILLEGAL",
+    "subject": "Журналист",
+    "body": "Если опубликуешь эту статью, она станет последней в твоей жизни.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_01",
+    "category": "OTHER_THREAT",
+    "subject": "Данные",
+    "body": "Залью твои переписки и фото в сеть, если не заплатишь.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_02",
+    "category": "OTHER_THREAT",
+    "subject": "Вирус",
+    "body": "Запущу вирус в систему водоснабжения города.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_03",
+    "category": "OTHER_THREAT",
+    "subject": "Репутация",
+    "body": "Уничтожу твою репутацию, если не сделаешь так, как я скажу.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_04",
+    "category": "OTHER_THREAT",
+    "subject": "Река",
+    "body": "Мы отравим реку. Это будет экологическая катастрофа.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_05",
+    "category": "OTHER_THREAT",
+    "subject": "Клиенты",
+    "body": "Мы взломаем систему и выложим данные клиентов в открытый доступ.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "other_06",
+    "category": "OTHER_THREAT",
+    "subject": "Предупреждение",
+    "body": "У нас есть биологическое оружие, и мы готовы его использовать.",
+    "expected_action": "DELIVER_AND_ALERT"
+  },
+  {
+    "id": "benign_business_01",
+    "category": "BENIGN",
+    "subject": "Встреча",
+    "body": "Коллеги, прикрепляю повестку встречи на завтра. Жду всех в 10:00.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_02",
+    "category": "BENIGN",
+    "subject": "Отпуск",
+    "body": "Согласовано: отпуск с 15 по 22 число. Хорошего отдыха!",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_03",
+    "category": "BENIGN",
+    "subject": "Счёт",
+    "body": "Прошу оплатить счёт №345 до конца недели.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_04",
+    "category": "BENIGN",
+    "subject": "Отчёт",
+    "body": "Направляю отчёт за квартал. Все цифры проверены.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_05",
+    "category": "BENIGN",
+    "subject": "Созвон",
+    "body": "Давай созвонимся завтра в 10:00 и обсудим детали.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_06",
+    "category": "BENIGN",
+    "subject": "Документы",
+    "body": "Документы на оформление готовы, заберите в отделе кадров.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_07",
+    "category": "BENIGN",
+    "subject": "Правки",
+    "body": "Внесла правки в проект, посмотри когда будет время.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_08",
+    "category": "BENIGN",
+    "subject": "Акт",
+    "body": "Акт выполненных работ подписан с обеих сторон.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_09",
+    "category": "BENIGN",
+    "subject": "Поздравление",
+    "body": "С днём рождения! Здоровья, счастья и удачи!",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_business_10",
+    "category": "BENIGN",
+    "subject": "Суббота",
+    "body": "Работы в субботу не будет, переносим на понедельник.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_01",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "Вчера в центре города произошёл теракт. Все подробности уточняются следствием.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_02",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "На заводе произошла утечка. Авария уже устранена, пострадавших нет.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_03",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "Убийство раскрыто, подозреваемый задержан. Подробности в вечернем выпуске.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_04",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "Спецслужбы предотвратили крупный теракт. Об этом сообщил официальный представитель.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_05",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "На ГЭС произошла авария. Ведутся восстановительные работы.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_06",
+    "category": "BENIGN",
+    "subject": "Новости",
+    "body": "Серия поджогов потрясла город. Полиция расследует криминал.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_07",
+    "category": "BENIGN",
+    "subject": "Обзор",
+    "body": "Обзор недели: теракты, катастрофы, происшествия — смотрите в нашем дайджесте.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_news_08",
+    "category": "BENIGN",
+    "subject": "Аналитика",
+    "body": "Угроза катастрофы миновала — аналитики подводят итоги года.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_01",
+    "category": "BENIGN",
+    "subject": "Книга",
+    "body": "Цитата из книги: «Я убью тебя», — сказал главный герой в финале.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_02",
+    "category": "BENIGN",
+    "subject": "Фильм",
+    "body": "В фильме показали захват заложников в школе. Очень напряжённый сюжет.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_03",
+    "category": "BENIGN",
+    "subject": "Шахматы",
+    "body": "Он сказал, что убьёт меня в шахматах. И действительно — я проиграл.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_04",
+    "category": "BENIGN",
+    "subject": "Fwd",
+    "body": "Fwd: пересылаю тебе то письмо с угрозой, которое я получил ранее от неизвестного.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_05",
+    "category": "BENIGN",
+    "subject": "Договор",
+    "body": "В договоре указано: сторона вправе предъявить претензию в случае угрозы неисполнения обязательств.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_06",
+    "category": "BENIGN",
+    "subject": "Выборы",
+    "body": "На выборах нужно действовать решительно и слаженно.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_07",
+    "category": "BENIGN",
+    "subject": "Цитата",
+    "body": "В новости процитировали фразу про бомбу. Это цитата, а не призыв.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_08",
+    "category": "BENIGN",
+    "subject": "Дедлайны",
+    "body": "У меня дедлайны как у террориста — всё горит!",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_09",
+    "category": "BENIGN",
+    "subject": "Экзамен",
+    "body": "Уничтожу этот экзамен! Уже неделю готовлюсь.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_10",
+    "category": "BENIGN",
+    "subject": "Чат",
+    "body": "Взорвал чат своими шутками, все смеются.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_11",
+    "category": "BENIGN",
+    "subject": "Время",
+    "body": "Убью время до встречи, зайду в кафе.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "benign_hard_12",
+    "category": "BENIGN",
+    "subject": "Задача",
+    "body": "Эта задача — настоящий убийца. Никак не могу решить.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_01",
+    "category": "BENIGN",
+    "subject": "Учёба",
+    "body": "Уничтожу экзамен — надо как следует подготовиться.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_02",
+    "category": "BENIGN",
+    "subject": "Работа",
+    "body": "Задача — убийца, никак не решу уже третий день.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_03",
+    "category": "BENIGN",
+    "subject": "Мемы",
+    "body": "Взорвал чат смешными мемами, все оценили.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_04",
+    "category": "BENIGN",
+    "subject": "Ожидание",
+    "body": "Убью время до электрички, почитаю книгу.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_05",
+    "category": "BENIGN",
+    "subject": "Дедлайны",
+    "body": "Я как террорист с дедлайнами, всё сдаю в последний момент.",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_06",
+    "category": "BENIGN",
+    "subject": "Пустое",
+    "body": "",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_07",
+    "category": "BENIGN",
+    "subject": "Без тела",
+    "body": "",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_08",
+    "category": "BENIGN",
+    "subject": "Вложение",
+    "body": "",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_09",
+    "category": "BENIGN",
+    "subject": "HTML",
+    "body": "<html><body><h1>Привет</h1><p>Это HTML-письмо без угроз.</p></body></html>",
+    "expected_action": "DELIVER"
+  },
+  {
+    "id": "neutral_10",
+    "category": "BENIGN",
+    "subject": "Hello",
+    "body": "This is a message in an unknown language for testing purposes.",
+    "expected_action": "DELIVER"
+  }
+]
