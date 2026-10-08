@@ -41,7 +41,7 @@ smtp_controller = Controller(
     enable_SMTPUTF8=True,
 )
 
-app = FastAPI(title="AI SMTP Gateway", version="0.8.2")
+app = FastAPI(title="AI SMTP Gateway", version="0.8.3")
 app.include_router(build_router(config, repository))
 
 

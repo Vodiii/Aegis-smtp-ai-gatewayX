@@ -1,4 +1,4 @@
-# AI SMTP Gateway MVP v0.8.2
+# AI SMTP Gateway MVP v0.8.3
 
 SMTP security gateway for hackathon MVP.
 
@@ -123,7 +123,7 @@ The suite prints classification, routing decision, AI usage and processing timin
 ## Risk Gate benchmark
 The benchmark contains 150 benign and 40 synthetic threat messages across all four threat categories. It reports FAST/AI routing by benign cohort and fails if any synthetic threat bypasses the AI gate.
 
-Version: v0.8.2
+Version: v0.8.3
 
 ## v0.8.2 reliability
 SMTP DATA now durably spools the message into SQLite + a fsynced raw file and returns 250 before classification/delivery. A background worker provides crash recovery, durable queue state, per-recipient delivery records, retries, and idempotent enqueue semantics. Delivery is at-least-once across process crashes.
@@ -136,3 +136,24 @@ Example:
 ```powershell
 python scripts/run_quality_suite.py --data test-data/external_qa_suite.json
 ```
+
+
+## v0.8.3 P0 failure-test hardening
+
+The durable queue now has a dedicated failure-scenario regression suite covering: concurrent duplicate enqueue, per-recipient partial failure isolation, stale queue recovery after restart, and the unavoidable SMTP crash window after downstream acceptance. The product semantics are explicitly **at-least-once** across that final crash window; exactly-once delivery cannot be guaranteed by SMTP alone.
+
+Run the local P0 failure tests with:
+
+```bash
+python -m pytest -q tests/test_failure_scenarios.py
+```
+
+## P0 verification
+
+Run the dedicated failure scenarios without calling DeepSeek:
+
+```bash
+python scripts/run_p0_failure_suite.py
+```
+
+The suite validates concurrent duplicate enqueue, per-recipient partial failure, stale queue recovery, and the SMTP crash boundary. It intentionally documents the product as **at-least-once** across a crash that occurs after downstream acceptance but before the local `SENT` transaction commits.
