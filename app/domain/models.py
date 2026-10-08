@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -39,6 +39,16 @@ class EmailDocument(BaseModel):
     @classmethod
     def strip_recipients(cls, value: list[str]) -> list[str]:
         return [item.strip() for item in value if item and item.strip()]
+
+
+class RiskAssessment(BaseModel):
+    score: float = Field(ge=0.0, le=1.0)
+    requires_ai: bool
+    keywords: list[str] = Field(default_factory=list)
+    phrases: list[str] = Field(default_factory=list)
+    char_probability: float = Field(default=0.0, ge=0.0, le=1.0)
+    obfuscation_detected: bool = False
+    reason: str = ""
 
 
 class ThreatAssessment(BaseModel):
@@ -78,6 +88,9 @@ class ProcessingResult(BaseModel):
     classification: Classification
     decision: PolicyDecision
     processing_time_ms: int
+    processing_started_at: datetime | None = None
+    processing_finished_at: datetime | None = None
+    risk_assessment: RiskAssessment | None = None
 
 
 @dataclass(frozen=True)
@@ -92,6 +105,11 @@ class GatewaySettings:
     deepseek_max_retries: int = 1
     deepseek_retry_backoff_seconds: float = 0.35
     max_ai_text_chars: int = 6000
+    max_message_size_bytes: int = 10 * 1024 * 1024
+    max_recipients: int = 50
+    max_attachments: int = 20
+    allowed_recipient_domains: tuple[str, ...] = ("local.test",)
+    gateway_loop_token: str = ""
     data_dir: str = "./data"
     db_path: str = "./data/gateway.db"
     mode: str = "ENFORCE"
@@ -103,3 +121,8 @@ class GatewaySettings:
     technogenic_destination: str = "alerts-technogenic@local.test"
     illegal_destination: str = "alerts-illegal@local.test"
     other_threat_destination: str = "alerts-other@local.test"
+    risk_ai_threshold: float = 0.22
+    risk_low_threshold: float = 0.08
+    risk_char_threshold: float = 0.75
+    risk_require_ai_on_obfuscation: bool = True
+    risk_training_path: str = "./config/risk_training.json"

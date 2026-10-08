@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException, Query
 
 from app.infrastructure.config import AppConfig
@@ -26,7 +28,9 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
 
     @router.get("/stats")
     def stats():
-        return repository.stats()
+        result = repository.stats()
+        result["generated_at"] = datetime.now(timezone.utc).isoformat()
+        return result
 
     @router.get("/settings")
     def settings():
@@ -39,6 +43,13 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
                 "ILLEGAL": gateway.illegal_threshold,
                 "OTHER_THREAT": gateway.other_threat_threshold,
             },
+            "risk_engine": {
+                "ai_threshold": gateway.risk_ai_threshold,
+                "low_threshold": gateway.risk_low_threshold,
+                "char_threshold": gateway.risk_char_threshold,
+                "require_ai_on_obfuscation": gateway.risk_require_ai_on_obfuscation,
+                "training_path": gateway.risk_training_path,
+            },
             "destinations": {
                 "TERRORISM": gateway.terrorism_destination,
                 "TECHNOGENIC": gateway.technogenic_destination,
@@ -46,6 +57,13 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
                 "OTHER_THREAT": gateway.other_threat_destination,
             },
             "deepseek_model": gateway.deepseek_model,
+            "limits": {
+                "max_message_size_bytes": gateway.max_message_size_bytes,
+                "max_ai_text_chars": gateway.max_ai_text_chars,
+                "max_recipients": gateway.max_recipients,
+                "max_attachments": gateway.max_attachments,
+            },
+            "allowed_recipient_domains": list(gateway.allowed_recipient_domains),
         }
 
     return router

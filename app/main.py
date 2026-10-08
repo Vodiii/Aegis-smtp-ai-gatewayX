@@ -11,6 +11,7 @@ from app.application.processing_service import EmailProcessor
 from app.infrastructure.config import load_config
 from app.infrastructure.database.repository import MessageRepository
 from app.infrastructure.deepseek.client import DeepSeekClient
+from app.infrastructure.risk.engine import RiskEngine
 from app.gateway import SmtpGatewayHandler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -26,11 +27,18 @@ classifier = DeepSeekClient(
     retry_backoff_seconds=config.gateway.deepseek_retry_backoff_seconds,
 )
 policy = PolicyEngine(config.gateway)
-processor = EmailProcessor(classifier, policy, repository)
+risk_engine = RiskEngine(config.gateway)
+processor = EmailProcessor(classifier, policy, repository, risk_engine)
 handler = SmtpGatewayHandler(processor, config.gateway)
-smtp_controller = Controller(handler, hostname="0.0.0.0", port=2525)
+smtp_controller = Controller(
+    handler,
+    hostname="0.0.0.0",
+    port=2525,
+    data_size_limit=config.gateway.max_message_size_bytes,
+    enable_SMTPUTF8=True,
+)
 
-app = FastAPI(title="AI SMTP Gateway", version="0.2.0")
+app = FastAPI(title="AI SMTP Gateway", version="0.7.0")
 app.include_router(build_router(config, repository))
 
 
