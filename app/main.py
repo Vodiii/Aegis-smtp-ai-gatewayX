@@ -22,6 +22,8 @@ classifier = DeepSeekClient(
     config.deepseek_secondary_key,
     model=config.gateway.deepseek_model,
     timeout_seconds=config.gateway.deepseek_api_timeout_seconds,
+    max_retries=config.gateway.deepseek_max_retries,
+    retry_backoff_seconds=config.gateway.deepseek_retry_backoff_seconds,
 )
 policy = PolicyEngine(config.gateway)
 processor = EmailProcessor(classifier, policy, repository)

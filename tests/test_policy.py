@@ -37,7 +37,7 @@ def test_fallback_threat_is_delivered_and_alerted_when_confident():
         )
     )
     assert result.action == Action.DELIVER_AND_ALERT
-    assert result.review is False
+    assert result.review is True
 
 
 

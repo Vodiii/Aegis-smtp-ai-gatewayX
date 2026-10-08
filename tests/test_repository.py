@@ -47,3 +47,4 @@ def test_repository_saves_threat_confidence_and_round_trips(tmp_path: Path):
     assert record["threat_confidence"] == 0.93
     assert record["category"] == "TERRORISM"
     assert record["action"] == "DELIVER_AND_ALERT"
+    assert record["classification_source"] == "AI_TWO_STAGE"

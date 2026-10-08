@@ -39,28 +39,15 @@ class SmtpGatewayHandler:
         original_recipients = list(envelope.rcpt_tos)
 
         if not original_recipients:
+            self.processor.repository.update_forward_status(record_id, "ORIGINAL_FAILED", "No original SMTP recipients available")
             raise ValueError("No original SMTP recipients available")
 
         if self.settings.mode == "AUDIT" or decision.action == Action.DELIVER:
-            self._send(
-                mail_from=envelope.mail_from or "",
-                recipients=original_recipients,
-                raw_message=envelope.content,
-                host=self.settings.original_smtp_host,
-                port=self.settings.original_smtp_port,
-            )
-            self.processor.repository.update_forward_status(record_id, "ORIGINAL_SENT")
+            self._send_original_or_fail(record_id, envelope, original_recipients)
             return record_id, result
 
         if decision.action == Action.DELIVER_AND_ALERT and decision.destination:
-            self._send(
-                mail_from=envelope.mail_from or "",
-                recipients=original_recipients,
-                raw_message=envelope.content,
-                host=self.settings.original_smtp_host,
-                port=self.settings.original_smtp_port,
-            )
-            self.processor.repository.update_forward_status(record_id, "ORIGINAL_SENT")
+            self._send_original_or_fail(record_id, envelope, original_recipients)
 
             try:
                 self._send(
@@ -78,15 +65,23 @@ class SmtpGatewayHandler:
                 LOGGER.exception("Alert copy failed for id=%s", record_id)
             return record_id, result
 
-        self._send(
-            mail_from=envelope.mail_from or "",
-            recipients=original_recipients,
-            raw_message=envelope.content,
-            host=self.settings.original_smtp_host,
-            port=self.settings.original_smtp_port,
-        )
-        self.processor.repository.update_forward_status(record_id, "ORIGINAL_SENT")
+        self._send_original_or_fail(record_id, envelope, original_recipients)
         return record_id, result
+
+    def _send_original_or_fail(self, record_id: str, envelope: Any, recipients: list[str]) -> None:
+        try:
+            self._send(
+                mail_from=envelope.mail_from or "",
+                recipients=recipients,
+                raw_message=envelope.content,
+                host=self.settings.original_smtp_host,
+                port=self.settings.original_smtp_port,
+            )
+            self.processor.repository.update_forward_status(record_id, "ORIGINAL_SENT")
+        except Exception as exc:
+            self.processor.repository.update_forward_status(record_id, "ORIGINAL_FAILED", str(exc))
+            LOGGER.exception("Original delivery failed for id=%s", record_id)
+            raise
 
     def _send(self, mail_from: str, recipients: list[str], raw_message: bytes, host: str, port: int) -> None:
         if not recipients:

@@ -32,6 +32,8 @@ def load_config() -> AppConfig:
         smtp_timeout_seconds=_float("SMTP_TIMEOUT_SECONDS", 8.0),
         deepseek_model=os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
         deepseek_api_timeout_seconds=_float("DEEPSEEK_API_TIMEOUT_SECONDS", 8.0),
+        deepseek_max_retries=_int("DEEPSEEK_MAX_RETRIES", 1),
+        deepseek_retry_backoff_seconds=_float("DEEPSEEK_RETRY_BACKOFF_SECONDS", 0.35),
         max_ai_text_chars=_int("MAX_AI_TEXT_CHARS", 6000),
         data_dir=os.getenv("DATA_DIR", "./data"),
         db_path=os.getenv("DB_PATH", "./data/gateway.db"),
