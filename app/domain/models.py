@@ -89,6 +89,8 @@ class GatewaySettings:
     smtp_timeout_seconds: float = 8.0
     deepseek_model: str = "deepseek-flash"
     deepseek_api_timeout_seconds: float = 8.0
+    deepseek_max_retries: int = 1
+    deepseek_retry_backoff_seconds: float = 0.35
     max_ai_text_chars: int = 6000
     data_dir: str = "./data"
     db_path: str = "./data/gateway.db"

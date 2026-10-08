@@ -47,13 +47,19 @@ class MessageRepository:
                     processing_time_ms INTEGER NOT NULL,
                     raw_path TEXT NOT NULL,
                     forward_status TEXT NOT NULL DEFAULT 'PENDING',
-                    forward_error TEXT
+                    forward_error TEXT,
+                    classification_source TEXT NOT NULL DEFAULT 'UNKNOWN',
+                    decision_reason TEXT NOT NULL DEFAULT ''
                 )
                 """
             )
             columns = {row[1] for row in conn.execute("PRAGMA table_info(messages)").fetchall()}
             if "threat_confidence" not in columns:
                 conn.execute("ALTER TABLE messages ADD COLUMN threat_confidence REAL")
+            if "classification_source" not in columns:
+                conn.execute("ALTER TABLE messages ADD COLUMN classification_source TEXT NOT NULL DEFAULT 'UNKNOWN'")
+            if "decision_reason" not in columns:
+                conn.execute("ALTER TABLE messages ADD COLUMN decision_reason TEXT NOT NULL DEFAULT ''")
 
     def save(self, record_id: str, raw_message: bytes, email: Any, result: ProcessingResult) -> None:
         raw_path = self.raw_dir / f"{record_id}.eml"
@@ -65,8 +71,8 @@ class MessageRepository:
                     id, processed_at, message_id, sender, recipients_json,
                     subject, category, is_threat, confidence, threat_confidence, reason,
                     evidence_json, action, destination, review,
-                    processing_time_ms, raw_path, forward_status, forward_error
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    processing_time_ms, raw_path, forward_status, forward_error, classification_source, decision_reason
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     record_id,
@@ -88,6 +94,8 @@ class MessageRepository:
                     str(raw_path),
                     "PENDING",
                     None,
+                    result.classification.source,
+                    result.decision.reason,
                 ),
             )
 

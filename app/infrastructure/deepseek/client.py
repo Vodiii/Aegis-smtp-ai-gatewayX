@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from typing import Any
 
 import httpx
@@ -14,8 +15,11 @@ from app.domain.models import (
     ThreatAssessment,
     ThreatCategory,
 )
+from app.infrastructure.deepseek.signals import detect_high_signal_conflicts
 
 LOGGER = logging.getLogger(__name__)
+
+RETRYABLE_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
 THREAT_PROMPT = """
 You are the first-stage threat detector for an SMTP security gateway.
@@ -93,10 +97,14 @@ class DeepSeekClient:
         secondary_key: str | None,
         model: str,
         timeout_seconds: float = 8.0,
+        max_retries: int = 1,
+        retry_backoff_seconds: float = 0.35,
     ) -> None:
         self.keys = [key for key in (primary_key, secondary_key) if key]
         self.model = model
         self.timeout_seconds = timeout_seconds
+        self.max_retries = max(0, max_retries)
+        self.retry_backoff_seconds = max(0.0, retry_backoff_seconds)
         self.endpoint = "https://api.deepseek.com/chat/completions"
 
     def classify(self, email: EmailDocument) -> Classification:
@@ -105,18 +113,19 @@ class DeepSeekClient:
             return self._fallback(email, "DeepSeek API keys are not configured")
 
         last_error: Exception | None = None
-        for key in self.keys:
+        for key_index, key in enumerate(self.keys, start=1):
             try:
                 threat = self._detect_threat(key, email)
 
                 # If the first stage says BENIGN but strong deterministic signals
                 # contradict it, perform a focused re-check of the threat gate.
                 if not threat.is_threat:
-                    from app.infrastructure.deepseek.signals import detect_high_signal_conflicts
-
                     signals = detect_high_signal_conflicts(email.subject, email.text)
                     if signals:
-                        threat = self._adjudicate_threat(key, email, signals) or threat
+                        adjudicated = self._adjudicate_threat(key, email, signals)
+                        if adjudicated is None:
+                            raise RuntimeError("Threat adjudication failed after high-signal conflict")
+                        threat = adjudicated
 
                 if not threat.is_threat:
                     return Classification(
@@ -143,25 +152,60 @@ class DeepSeekClient:
                     evidence=list(dict.fromkeys(threat.evidence + category.evidence)),
                     source="AI_TWO_STAGE",
                 )
-            except (httpx.HTTPError, KeyError, IndexError, json.JSONDecodeError, ValidationError, ValueError) as exc:
+            except (httpx.HTTPError, KeyError, IndexError, json.JSONDecodeError, ValidationError, ValueError, RuntimeError) as exc:
                 last_error = exc
-                LOGGER.warning("DeepSeek attempt failed: %s", exc)
+                LOGGER.warning("DeepSeek attempt failed for key #%s: %s", key_index, exc)
+                continue
 
-        return self._fallback(email, f"DeepSeek unavailable: {last_error}")
+        return self._fallback(email, f"DeepSeek unavailable after {len(self.keys)} key(s): {last_error}")
 
     def _request(self, key: str, payload: dict, timeout: float) -> dict:
-        response = httpx.post(
-            self.endpoint,
-            headers={"Authorization": f"Bearer {key}"},
-            json=payload,
-            timeout=timeout,
-        )
-        response.raise_for_status()
-        data = response.json()
-        content = data["choices"][0]["message"]["content"]
-        if not content:
-            raise ValueError("DeepSeek returned empty content")
-        return self._parse_json(content)
+        attempts = self.max_retries + 1
+        last_error: Exception | None = None
+
+        for attempt in range(attempts):
+            try:
+                response = httpx.post(
+                    self.endpoint,
+                    headers={"Authorization": f"Bearer {key}"},
+                    json=payload,
+                    timeout=timeout,
+                )
+                if response.status_code in RETRYABLE_STATUS_CODES:
+                    raise httpx.HTTPStatusError(
+                        f"Retryable DeepSeek HTTP {response.status_code}",
+                        request=response.request,
+                        response=response,
+                    )
+                response.raise_for_status()
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                if not content:
+                    raise ValueError("DeepSeek returned empty content")
+                return self._parse_json(content)
+            except httpx.HTTPStatusError as exc:
+                last_error = exc
+                status = exc.response.status_code if exc.response is not None else None
+                if status not in RETRYABLE_STATUS_CODES or attempt >= attempts - 1:
+                    raise
+                self._sleep_before_retry(attempt, status)
+            except (httpx.RequestError, TimeoutError) as exc:
+                last_error = exc
+                if attempt >= attempts - 1:
+                    raise
+                self._sleep_before_retry(attempt, None)
+
+        if last_error:
+            raise last_error
+        raise RuntimeError("DeepSeek request failed without a captured error")
+
+    def _sleep_before_retry(self, attempt: int, status: int | None) -> None:
+        delay = self.retry_backoff_seconds * (2**attempt)
+        if status == 429:
+            delay *= 2
+        if delay > 0:
+            LOGGER.warning("Retrying DeepSeek request in %.2fs (status=%s)", delay, status)
+            time.sleep(delay)
 
     def _detect_threat(self, key: str, email: EmailDocument) -> ThreatAssessment:
         payload = self._build_payload(THREAT_PROMPT, email)
@@ -215,7 +259,9 @@ Return JSON only using this schema:
             "response_format": {"type": "json_object"},
         }
         try:
-            return ThreatAssessment.model_validate(self._request(key, payload, min(self.timeout_seconds, 4.0)))
+            return ThreatAssessment.model_validate(
+                self._request(key, payload, min(self.timeout_seconds, 4.0))
+            )
         except (httpx.HTTPError, KeyError, IndexError, json.JSONDecodeError, ValidationError, ValueError) as exc:
             LOGGER.warning("DeepSeek threat adjudication failed: %s", exc)
             return None
@@ -252,16 +298,21 @@ Return JSON only using this schema:
 
     @staticmethod
     def _fallback(email: EmailDocument, reason: str) -> Classification:
-        text = f"{email.subject}\n{email.text}".lower()
+        text = f"{email.subject}\n{email.text}".casefold()
+        signals = detect_high_signal_conflicts(email.subject, email.text)
 
-        terrorism_terms = ("теракт", "террористическая атака", "террорист", "заложник", "заминирован", "бомба")
-        technogenic_terms = ("авария на заводе", "взрыв на заводе", "утечка газа", "утечка химикатов", "радиационная авария")
+        terrorism_terms = (
+            "теракт", "террористическая атака", "террорист", "заложник", "заминирован", "бомба",
+        )
+        technogenic_terms = (
+            "авария на заводе", "взрыв на заводе", "утечка газа", "утечка химикатов", "радиационная авария",
+        )
         illegal_terms = ("ограбить", "похитить", "поджечь", "незаконно", "взломать систему")
 
-        if any(term in text for term in terrorism_terms):
+        if any(term in text for term in terrorism_terms) or any(s.category == "TERRORISM" for s in signals):
             category = ThreatCategory.TERRORISM
             confidence = 0.90
-        elif any(term in text for term in technogenic_terms):
+        elif any(term in text for term in technogenic_terms) or any(s.category == "TECHNOGENIC" for s in signals):
             category = ThreatCategory.TECHNOGENIC
             confidence = 0.88
         elif any(term in text for term in illegal_terms):
@@ -276,7 +327,7 @@ Return JSON only using this schema:
             is_threat=category != ThreatCategory.BENIGN,
             confidence=confidence,
             reason=f"Rule-based fallback. {reason}",
-            evidence=[],
+            evidence=[phrase for signal in signals for phrase in signal.phrases],
             source="FALLBACK",
             threat_confidence=confidence,
         )

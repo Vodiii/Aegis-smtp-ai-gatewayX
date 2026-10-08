@@ -13,7 +13,12 @@ class PolicyEngine:
                 action=Action.DELIVER,
                 category=classification.category,
                 confidence=classification.confidence,
-                reason="BENIGN/non-threat classification",
+                review=classification.source == "FALLBACK",
+                reason=(
+                    "BENIGN/non-threat classification"
+                    if classification.source != "FALLBACK"
+                    else "AI unavailable; delivered to original recipients and flagged for manual review"
+                ),
             )
 
         threshold = {
@@ -32,12 +37,13 @@ class PolicyEngine:
 
         if destination:
             below_threshold = classification.confidence < threshold
-            review = below_threshold
+            review = below_threshold or classification.source == "FALLBACK"
             threshold_note = (
                 f"confidence {classification.confidence:.2f} below review threshold {threshold:.2f}"
                 if below_threshold
                 else f"confidence {classification.confidence:.2f} meets threshold {threshold:.2f}"
             )
+            source_note = "fallback classification; manual review recommended" if classification.source == "FALLBACK" else "AI classification"
             return PolicyDecision(
                 action=Action.DELIVER_AND_ALERT,
                 category=classification.category,
@@ -45,8 +51,8 @@ class PolicyEngine:
                 destination=destination,
                 review=review,
                 reason=(
-                    f"Threat classified as {classification.category.value}; {threshold_note}. "
-                    f"Deliver to original recipients and copy to alert mailbox (source={classification.source})"
+                    f"Threat classified as {classification.category.value}; {threshold_note}; {source_note}. "
+                    "Deliver to original recipients and copy to alert mailbox."
                 ),
             )
 
