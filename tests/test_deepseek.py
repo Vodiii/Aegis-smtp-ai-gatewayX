@@ -66,30 +66,65 @@ def test_non_threat_stops_before_category(monkeypatch):
     assert result.is_threat is False
     assert len(calls) == 1
 
-def test_fallback_when_all_keys_fail(monkeypatch):
-    import httpx as httpx_module
+
+def test_unified_classification_uses_one_call(monkeypatch):
+    calls = []
 
     def fake_post(*args, **kwargs):
-        raise httpx_module.ConnectError("network down")
+        calls.append(1)
+        body = {
+            "is_threat": True,
+            "category": "ILLEGAL",
+            "confidence": 0.94,
+            "threat_confidence": 0.97,
+            "reason": "direct unlawful threat",
+            "evidence": ["найду тебя и убью"],
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(body, ensure_ascii=False)}}]},
+            request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
+        )
 
-    monkeypatch.setattr(httpx_module, "post", fake_post)
-    client = DeepSeekClient("key1", "key2", "deepseek-flash")
-    result = client.classify(EmailDocument(subject="test", text="завтра взорву офис"))
+    monkeypatch.setattr(httpx, "post", fake_post)
+    client = DeepSeekClient("primary", None, "deepseek-flash")
+    result = client.classify(EmailDocument(subject="test", text="Найду тебя и убью."))
 
-    assert result.source == "FALLBACK"
+    assert result.category == ThreatCategory.ILLEGAL
     assert result.is_threat is True
-    assert result.category == ThreatCategory.TERRORISM
+    assert result.source == "AI_UNIFIED"
+    assert result.threat_confidence == 0.97
+    assert len(calls) == 1
 
 
-def test_fallback_ignores_non_threat(monkeypatch):
-    import httpx as httpx_module
+def test_category_policy_correction_does_not_add_ai_call(monkeypatch):
+    cases = [
+        ("Залью твои переписки и фото в сеть, если не заплатишь.", "ILLEGAL", "OTHER_THREAT"),
+        ("Запущу вирус в систему водоснабжения города.", "TECHNOGENIC", "OTHER_THREAT"),
+    ]
 
-    def fake_post(*args, **kwargs):
-        raise httpx_module.ConnectError("network down")
+    for text, ai_category, expected_category in cases:
+        calls = []
 
-    monkeypatch.setattr(httpx_module, "post", fake_post)
-    client = DeepSeekClient("key1", None, "deepseek-flash")
-    result = client.classify(EmailDocument(subject="test", text="обычное письмо про встречу"))
+        def fake_post(*args, _category=ai_category, **kwargs):
+            calls.append(1)
+            body = {
+                "is_threat": True,
+                "category": _category,
+                "confidence": 0.95,
+                "threat_confidence": 0.96,
+                "reason": "mock category",
+                "evidence": [],
+            }
+            return httpx.Response(
+                200,
+                json={"choices": [{"message": {"content": json.dumps(body, ensure_ascii=False)}}]},
+                request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
+            )
 
-    assert result.source == "FALLBACK"
-    assert result.category == ThreatCategory.BENIGN
+        monkeypatch.setattr(httpx, "post", fake_post)
+        client = DeepSeekClient("primary", None, "deepseek-flash")
+        result = client.classify(EmailDocument(text=text))
+
+        assert result.category.value == expected_category
+        assert len(calls) == 1

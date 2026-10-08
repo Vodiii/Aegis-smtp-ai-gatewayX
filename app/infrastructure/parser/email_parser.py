@@ -28,20 +28,27 @@ def _decode_part(part: Message) -> str:
     charset = part.get_content_charset() or "utf-8"
     try:
         return payload.decode(charset, errors="replace")
-    except LookupError:
+    except (LookupError, UnicodeError):
         return payload.decode("utf-8", errors="replace")
 
 
 class EmailParser:
-    def __init__(self, max_text_chars: int = 6000) -> None:
-        self.max_text_chars = max_text_chars
+    def __init__(self, max_text_chars: int = 6000, max_attachments: int = 20) -> None:
+        self.max_text_chars = max(100, max_text_chars)
+        self.max_attachments = max(1, max_attachments)
 
     def parse(self, raw_message: bytes) -> EmailDocument:
         message = BytesParser(policy=policy.default).parsebytes(raw_message)
 
         sender = getaddresses([message.get("From", "")])
-        sender_value = sender[0][1] if sender else ""
-        recipients = [address for _, address in getaddresses(message.get_all("To", []) + message.get_all("Cc", []))]
+        sender_value = sender[0][1].strip() if sender and sender[0][1] else ""
+        recipients = [
+            address.strip()
+            for _, address in getaddresses(
+                message.get_all("To", []) + message.get_all("Cc", [])
+            )
+            if address and address.strip()
+        ]
 
         plain_parts: list[str] = []
         html_parts: list[str] = []
@@ -54,16 +61,17 @@ class EmailParser:
             filename = part.get_filename()
             disposition = part.get_content_disposition()
             content_type = part.get_content_type()
-            payload = part.get_payload(decode=True) or b""
 
             if filename or disposition == "attachment":
-                attachments.append(
-                    AttachmentMeta(
-                        filename=_decode(filename),
-                        content_type=content_type,
-                        size=len(payload),
+                if len(attachments) < self.max_attachments:
+                    payload = part.get_payload(decode=True) or b""
+                    attachments.append(
+                        AttachmentMeta(
+                            filename=_decode(filename)[:255],
+                            content_type=content_type[:127],
+                            size=len(payload),
+                        )
                     )
-                )
                 continue
 
             if content_type == "text/plain":
@@ -71,6 +79,7 @@ class EmailParser:
             elif content_type == "text/html":
                 html_parts.append(_decode_part(part))
 
+        # Prefer plain text because it is the least ambiguous representation.
         if plain_parts:
             body = "\n\n".join(plain_parts)
         else:
@@ -79,15 +88,14 @@ class EmailParser:
                 for html in html_parts
             )
 
-        body = body.strip()
-        if len(body) > self.max_text_chars:
-            body = body[: self.max_text_chars]
+        body = " ".join(body.split())
+        body = body[: self.max_text_chars]
 
         return EmailDocument(
             message_id=_decode(message.get("Message-ID")) or None,
             sender=sender_value,
             recipients=recipients,
-            subject=_decode(message.get("Subject")),
+            subject=_decode(message.get("Subject"))[:500],
             text=body,
             attachments=attachments,
         )
