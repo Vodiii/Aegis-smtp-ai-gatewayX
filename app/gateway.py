@@ -43,44 +43,27 @@ class SmtpGatewayHandler:
             if self._is_loop_copy(raw_message):
                 LOGGER.error("Gateway loop marker detected; refusing to process message")
                 return "550 5.4.6 Mail routing loop detected"
+            recipients = list(envelope.rcpt_tos)
+            if not recipients:
+                return "553 5.1.3 No valid recipients"
 
             delivery_key = MessageRepository.make_delivery_key(
-                raw_message, envelope.mail_from or "", list(envelope.rcpt_tos)
+                raw_message, envelope.mail_from or "", recipients
             )
-            existing = self.processor.repository.find_by_delivery_key(delivery_key)
-            if existing:
-                action = existing["forward_status"]
-                if action in {"ORIGINAL_SENT", "ORIGINAL_AND_ALERT_SENT"}:
-                    result = self.processor.repository.to_processing_result(existing["id"])
-                    if result:
-                        LOGGER.info("idempotent replay id=%s status=%s", existing["id"], action)
-                        return "250 2.0.0 Message previously accepted"
-                if action == "ORIGINAL_SENT_ALERT_FAILED" and existing.get("destination"):
-                    await asyncio.to_thread(self._retry_alert_only, existing["id"], existing, raw_message, envelope)
-                    return "250 2.0.0 Message previously delivered; alert copy retried"
+            job_id, created = self.processor.repository.enqueue_message(
+                raw_message, envelope.mail_from or "", recipients, delivery_key
+            )
+            if created:
+                LOGGER.info("accepted job=%s recipients=%d bytes=%d", job_id, len(recipients), len(raw_message))
+                return "250 2.0.0 Message accepted for asynchronous processing"
 
-            record_id, result = await asyncio.to_thread(
-                self._process_and_forward, envelope, delivery_key
-            )
-            LOGGER.info(
-                "processed id=%s category=%s confidence=%.2f action=%s review=%s source=%s status=%s processing_ms=%d",
-                record_id,
-                result.classification.category.value,
-                result.classification.confidence,
-                result.decision.action.value,
-                result.decision.review,
-                result.classification.source,
-                self.processor.repository.get(record_id)["forward_status"],
-                result.processing_time_ms,
-            )
-            return "250 2.0.0 Message accepted"
+            LOGGER.info("idempotent SMTP replay job=%s delivery_key=%s", job_id, delivery_key)
+            return "250 2.0.0 Message previously accepted"
         except InvalidSmtpInput as exc:
             LOGGER.warning("SMTP input rejected: %s", exc)
             return str(exc)
-        except OriginalDeliveryTemporaryFailure:
-            return "451 4.3.0 Temporary downstream delivery failure"
         except Exception:
-            LOGGER.exception("Gateway processing/forwarding failed")
+            LOGGER.exception("Durable SMTP enqueue failed")
             return "451 4.3.0 Temporary processing failure"
 
     def _process_and_forward(self, envelope: Any, delivery_key: str | None = None) -> tuple[str, ProcessingResult]:

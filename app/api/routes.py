@@ -29,6 +29,7 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
     @router.get("/stats")
     def stats():
         result = repository.stats()
+        result["queue"] = repository.queue_stats()
         result["generated_at"] = datetime.now(timezone.utc).isoformat()
         return result
 

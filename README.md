@@ -1,4 +1,4 @@
-# AI SMTP Gateway MVP v0.7.3
+# AI SMTP Gateway MVP v0.8.2
 
 SMTP security gateway for hackathon MVP.
 
@@ -122,3 +122,17 @@ The suite prints classification, routing decision, AI usage and processing timin
 
 ## Risk Gate benchmark
 The benchmark contains 150 benign and 40 synthetic threat messages across all four threat categories. It reports FAST/AI routing by benign cohort and fails if any synthetic threat bypasses the AI gate.
+
+Version: v0.8.2
+
+## v0.8.2 reliability
+SMTP DATA now durably spools the message into SQLite + a fsynced raw file and returns 250 before classification/delivery. A background worker provides crash recovery, durable queue state, per-recipient delivery records, retries, and idempotent enqueue semantics. Delivery is at-least-once across process crashes.
+
+
+## Quality suite with async queue
+The gateway now processes mail asynchronously. `scripts/run_quality_suite.py` therefore sizes its default wait window from the number of cases (minimum 120s). Override with `--wait-seconds` when needed.
+
+Example:
+```powershell
+python scripts/run_quality_suite.py --data test-data/external_qa_suite.json
+```

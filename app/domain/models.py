@@ -126,3 +126,10 @@ class GatewaySettings:
     risk_char_threshold: float = 0.75
     risk_require_ai_on_obfuscation: bool = True
     risk_training_path: str = "./config/risk_training.json"
+    queue_poll_interval_seconds: float = 0.25
+    queue_retry_base_seconds: float = 1.0
+    queue_retry_max_seconds: float = 60.0
+    queue_stale_seconds: float = 120.0
+    queue_max_attempts: int = 20
+    delivery_retry_base_seconds: float = 2.0
+    delivery_max_attempts: int = 8

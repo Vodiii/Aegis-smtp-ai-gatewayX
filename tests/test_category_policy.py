@@ -56,3 +56,17 @@ def test_personal_arson_does_not_become_terrorism():
     category, reason = apply_category_policy(email, ThreatCategory.ILLEGAL)
     assert category == ThreatCategory.ILLEGAL
     assert reason is None
+
+
+def test_explicit_silence_extortion_overrides_generic_other_threat():
+    email = EmailDocument(text="Заплатишь мне за молчание, иначе сосед узнает всё.")
+    category, reason = apply_category_policy(email, ThreatCategory.OTHER_THREAT)
+    assert category == ThreatCategory.ILLEGAL
+    assert reason
+
+
+def test_data_disclosure_extortion_remains_other_threat():
+    email = EmailDocument(text="Залью твои переписки и фото в сеть, если не заплатишь.")
+    category, reason = apply_category_policy(email, ThreatCategory.ILLEGAL)
+    assert category == ThreatCategory.OTHER_THREAT
+    assert reason

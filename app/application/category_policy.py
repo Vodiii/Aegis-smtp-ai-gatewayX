@@ -27,6 +27,11 @@ _EXPLICIT_TECH_EVENT_PATTERN = re.compile(
     r"physical\s+damage)",
     re.IGNORECASE,
 )
+_EXTORTION_PATTERN = re.compile(
+    r"(?:заплат(?:ишь|и|ить)|плат(?:и|ить|ишь)|отда(?:шь|й)|pay|payment).{0,100}(?:молчани|иначе|otherwise|else)|"
+    r"(?:за\s+молчан|for\s+silence).{0,100}(?:узнает|learns|finds\s+out|otherwise|else)",
+    re.IGNORECASE,
+)
 _PHYSICAL_ILLEGAL_PATTERN = re.compile(
     r"(?:убью|убить|покалеч|причиню\s+вред|нанесу\s+вред|похищ|подожг|ограб|украд|"
     r"проникн|шантаж.*(?:деньг|заплат)|вымог)",
@@ -66,12 +71,18 @@ def apply_category_policy(
     data/reputation disclosure and cyber/virus actions without a physical
     technogenic mechanism.
     """
+    text = f"{email.subject}\n{email.text}"
+
+    # Clear extortion/blackmail is ILLEGAL unless the message contains the more
+    # specific data/reputation disclosure scenario, which is intentionally
+    # classified as OTHER_THREAT by this project taxonomy.
+    if category == ThreatCategory.OTHER_THREAT:
+        if _EXTORTION_PATTERN.search(text) and not _DATA_OR_REPUTATION_PATTERN.search(text):
+            return ThreatCategory.ILLEGAL, "category policy: explicit extortion/blackmail takes precedence over generic OTHER_THREAT"
+
     if category == ThreatCategory.ILLEGAL:
-        text = f"{email.subject}\n{email.text}"
         if _DATA_OR_REPUTATION_PATTERN.search(text) and not _PHYSICAL_ILLEGAL_PATTERN.search(text):
             return ThreatCategory.OTHER_THREAT, "category policy: data/reputation threat takes precedence over generic ILLEGAL"
-
-    text = f"{email.subject}\n{email.text}"
 
     if category == ThreatCategory.TECHNOGENIC:
         if _CYBER_OR_VIRUS_PATTERN.search(text) and not _EXPLICIT_TECH_EVENT_PATTERN.search(text):

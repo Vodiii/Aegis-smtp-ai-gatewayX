@@ -61,6 +61,13 @@ def load_config() -> AppConfig:
         risk_char_threshold=_float("RISK_CHAR_THRESHOLD", 0.75),
         risk_require_ai_on_obfuscation=os.getenv("RISK_REQUIRE_AI_ON_OBFUSCATION", "true").lower() in {"1", "true", "yes", "on"},
         risk_training_path=os.getenv("RISK_TRAINING_PATH", "./config/risk_training.json"),
+        queue_poll_interval_seconds=_float("QUEUE_POLL_INTERVAL_SECONDS", 0.25),
+        queue_retry_base_seconds=_float("QUEUE_RETRY_BASE_SECONDS", 1.0),
+        queue_retry_max_seconds=_float("QUEUE_RETRY_MAX_SECONDS", 60.0),
+        queue_stale_seconds=_float("QUEUE_STALE_SECONDS", 120.0),
+        queue_max_attempts=_int("QUEUE_MAX_ATTEMPTS", 20),
+        delivery_retry_base_seconds=_float("DELIVERY_RETRY_BASE_SECONDS", 2.0),
+        delivery_max_attempts=_int("DELIVERY_MAX_ATTEMPTS", 8),
     )
     return AppConfig(
         gateway=gateway,

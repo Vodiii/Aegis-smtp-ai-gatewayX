@@ -3,7 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+import time
+from email import policy
+from email.parser import BytesParser
 from datetime import datetime, timezone
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -91,6 +95,48 @@ class MessageRepository:
                     conn.execute(sql)
             conn.execute("CREATE INDEX IF NOT EXISTS idx_messages_delivery_key ON messages(delivery_key)")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_messages_processed_at ON messages(processed_at)")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS queue_jobs (
+                    job_id TEXT PRIMARY KEY,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    delivery_key TEXT NOT NULL UNIQUE,
+                    sender TEXT NOT NULL,
+                    recipients_json TEXT NOT NULL,
+                    raw_path TEXT NOT NULL,
+                    state TEXT NOT NULL DEFAULT 'QUEUED',
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    available_at REAL NOT NULL,
+                    locked_at REAL,
+                    last_error TEXT
+                )
+                """
+            )
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_queue_jobs_due ON queue_jobs(state, available_at)")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS deliveries (
+                    delivery_id TEXT PRIMARY KEY,
+                    message_id TEXT NOT NULL,
+                    kind TEXT NOT NULL,
+                    recipient TEXT NOT NULL,
+                    host TEXT NOT NULL,
+                    port INTEGER NOT NULL,
+                    raw_message BLOB NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    next_attempt_at REAL NOT NULL,
+                    last_error TEXT,
+                    sent_at TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    UNIQUE(message_id, kind, recipient)
+                )
+                """
+            )
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_deliveries_due ON deliveries(status, next_attempt_at)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_deliveries_message ON deliveries(message_id)")
 
     @staticmethod
     def make_delivery_key(raw_message: bytes, mail_from: str, recipients: list[str]) -> str:
@@ -175,6 +221,295 @@ class MessageRepository:
                 "UPDATE messages SET forward_status = ?, forward_error = ? WHERE id = ?",
                 (status, error, record_id),
             )
+
+    def enqueue_message(self, raw_message: bytes, mail_from: str, recipients: list[str], delivery_key: str) -> tuple[str, bool]:
+        if not recipients:
+            raise ValueError("No recipients")
+        existing = self.find_queue_by_delivery_key(delivery_key)
+        if existing:
+            return existing["job_id"], False
+        spool_dir = self.data_dir / "queue"
+        spool_dir.mkdir(parents=True, exist_ok=True)
+        job_id = str(uuid.uuid4())
+        raw_path = spool_dir / f"{job_id}.eml"
+        temp_path = spool_dir / f".{job_id}.tmp"
+        with temp_path.open("wb") as fh:
+            fh.write(raw_message)
+            fh.flush()
+            import os
+            os.fsync(fh.fileno())
+        temp_path.replace(raw_path)
+        now_iso = datetime.now(timezone.utc).isoformat()
+        now = time.time()
+        try:
+            with self._connect() as conn:
+                conn.execute(
+                    """INSERT INTO queue_jobs(
+                        job_id, created_at, updated_at, delivery_key, sender,
+                        recipients_json, raw_path, state, attempts, available_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'QUEUED', 0, ?)""",
+                    (
+                        job_id,
+                        now_iso,
+                        now_iso,
+                        delivery_key,
+                        mail_from,
+                        json.dumps(recipients, ensure_ascii=False),
+                        str(raw_path),
+                        now,
+                    ),
+                )
+        except sqlite3.IntegrityError:
+            try:
+                raw_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+            existing = self.find_queue_by_delivery_key(delivery_key)
+            if existing:
+                return existing["job_id"], False
+            raise
+        return job_id, True
+
+    def find_queue_by_delivery_key(self, delivery_key: str) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM queue_jobs WHERE delivery_key = ?", (delivery_key,)).fetchone()
+        return self._queue_row(row) if row else None
+
+    def claim_next_job(self) -> dict[str, Any] | None:
+        now = time.time()
+        with self._connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute(
+                "SELECT * FROM queue_jobs WHERE state IN ('QUEUED','RETRY') AND available_at <= ? ORDER BY created_at LIMIT 1",
+                (now,),
+            ).fetchone()
+            if not row:
+                conn.commit()
+                return None
+            job_id = row["job_id"]
+            attempts = int(row["attempts"]) + 1
+            conn.execute(
+                "UPDATE queue_jobs SET state='PROCESSING', attempts=?, locked_at=?, updated_at=? WHERE job_id=?",
+                (attempts, now, datetime.now(timezone.utc).isoformat(), job_id),
+            )
+            conn.commit()
+            result = dict(row)
+            result["attempts"] = attempts
+            result["recipients"] = json.loads(result.pop("recipients_json"))
+            return result
+
+    def recover_stale_jobs(self, stale_seconds: float) -> int:
+        cutoff = time.time() - stale_seconds
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self._connect() as conn:
+            cursor = conn.execute(
+                "UPDATE queue_jobs SET state='RETRY', available_at=?, locked_at=NULL, updated_at=?, last_error=? "
+                "WHERE state='PROCESSING' AND locked_at IS NOT NULL AND locked_at < ?",
+                (time.time(), now_iso, "Recovered stale processing job after restart", cutoff),
+            )
+            return cursor.rowcount
+
+    def retry_job(self, job_id: str, delay_seconds: float, error: str) -> None:
+        now = time.time()
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE queue_jobs SET state='RETRY', available_at=?, locked_at=NULL, updated_at=?, last_error=? WHERE job_id=?",
+                (now + max(0.0, delay_seconds), datetime.now(timezone.utc).isoformat(), error[:4000], job_id),
+            )
+
+    def mark_job_done(self, job_id: str) -> None:
+        self._set_job_state(job_id, "DONE", None)
+        self._cleanup_queue_spool(job_id)
+
+    def dead_letter_job(self, job_id: str, error: str) -> None:
+        self._set_job_state(job_id, "DEAD_LETTER", error)
+
+    def _set_job_state(self, job_id: str, state: str, error: str | None) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE queue_jobs SET state=?, updated_at=?, locked_at=NULL, last_error=? WHERE job_id=?",
+                (state, datetime.now(timezone.utc).isoformat(), error[:4000] if error else None, job_id),
+            )
+
+    def _cleanup_queue_spool(self, job_id: str) -> None:
+        with self._connect() as conn:
+            row = conn.execute("SELECT raw_path FROM queue_jobs WHERE job_id=?", (job_id,)).fetchone()
+        if row:
+            try:
+                Path(row["raw_path"]).unlink(missing_ok=True)
+            except Exception:
+                pass
+
+    @staticmethod
+    def read_spooled_message(raw_path: str) -> bytes:
+        return Path(raw_path).read_bytes()
+
+    def ensure_delivery_records(self, message_id: str, original_recipients: list[str], alert_destination: str | None) -> None:
+        message = self.get(message_id)
+        if not message:
+            raise KeyError(message_id)
+        raw = Path(message["raw_path"]).read_bytes()
+        original_host = self._delivery_host("ORIGINAL")
+        original_port = self._delivery_port("ORIGINAL")
+        now_iso = datetime.now(timezone.utc).isoformat()
+        now = time.time()
+        with self._connect() as conn:
+            original_seed_status = "SENT" if message.get("forward_status") in {
+                "ORIGINAL_SENT", "ORIGINAL_AND_ALERT_SENT", "ORIGINAL_SENT_ALERT_FAILED", "ORIGINAL_SENT_ALERT_PENDING"
+            } else "PENDING"
+            for recipient in original_recipients:
+                conn.execute(
+                    """INSERT OR IGNORE INTO deliveries(
+                        delivery_id, message_id, kind, recipient, host, port, raw_message,
+                        status, attempts, next_attempt_at, created_at, updated_at, sent_at
+                    ) VALUES (?, ?, 'ORIGINAL', ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)""",
+                    (str(uuid.uuid4()), message_id, recipient, original_host, original_port, raw, original_seed_status, now, now_iso, now_iso, now_iso if original_seed_status == "SENT" else None),
+                )
+            if alert_destination:
+                alert_seed_status = "SENT" if message.get("forward_status") == "ORIGINAL_AND_ALERT_SENT" else "PENDING"
+                alert_host = self._delivery_host("ALERT")
+                alert_port = self._delivery_port("ALERT")
+                alert_raw = self._build_alert_copy(raw, alert_destination)
+                conn.execute(
+                    """INSERT OR IGNORE INTO deliveries(
+                        delivery_id, message_id, kind, recipient, host, port, raw_message,
+                        status, attempts, next_attempt_at, created_at, updated_at, sent_at
+                    ) VALUES (?, ?, 'ALERT', ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)""",
+                    (str(uuid.uuid4()), message_id, alert_destination, alert_host, alert_port, alert_raw, alert_seed_status, now, now_iso, now_iso, now_iso if alert_seed_status == "SENT" else None),
+                )
+
+    def ensure_delivery_records_from_message(self, message_id: str) -> None:
+        message = self.get(message_id)
+        if not message:
+            raise KeyError(message_id)
+        alert = message["destination"] if message["action"] == "DELIVER_AND_ALERT" else None
+        # The settings-bound hosts are injected through init below.
+        self.ensure_delivery_records(message_id, message["recipients"], alert)
+
+    def configure_delivery_endpoints(self, settings: Any) -> None:
+        self._original_smtp_host = settings.original_smtp_host
+        self._original_smtp_port = settings.original_smtp_port
+        self._alert_smtp_host = settings.alert_smtp_host
+        self._alert_smtp_port = settings.alert_smtp_port
+        self._loop_token = settings.gateway_loop_token
+
+    def _delivery_host(self, kind: str) -> str:
+        return getattr(self, "_original_smtp_host" if kind == "ORIGINAL" else "_alert_smtp_host", "localhost")
+
+    def _delivery_port(self, kind: str) -> int:
+        return int(getattr(self, "_original_smtp_port" if kind == "ORIGINAL" else "_alert_smtp_port", 25))
+
+    def _build_alert_copy(self, raw: bytes, destination: str) -> bytes:
+        message = BytesParser(policy=policy.default).parsebytes(raw)
+        token = getattr(self, "_loop_token", "")
+        message["X-AI-SMTP-Gateway-Alert"] = "1"
+        if token:
+            message["X-AI-SMTP-Gateway-Token"] = token
+        message["X-AI-SMTP-Gateway-Alert-Recipient"] = destination
+        return message.as_bytes(policy=policy.SMTP)
+
+    def due_deliveries(self, message_id: str) -> list[dict[str, Any]]:
+        now = time.time()
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM deliveries WHERE message_id=? AND status IN ('PENDING','RETRY') AND next_attempt_at <= ? ORDER BY kind, recipient",
+                (message_id, now),
+            ).fetchall()
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["raw_message"] = bytes(item["raw_message"])
+            result.append(item)
+        return result
+
+    def mark_delivery_sent(self, delivery_id: str) -> None:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE deliveries SET status='SENT', sent_at=?, updated_at=?, last_error=NULL, attempts=attempts+1 WHERE delivery_id=?",
+                (now_iso, now_iso, delivery_id),
+            )
+
+    def mark_delivery_retry(self, delivery_id: str, delay_seconds: float, error: str) -> None:
+        now = time.time()
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE deliveries SET status='RETRY', next_attempt_at=?, updated_at=?, last_error=?, attempts=attempts+1 WHERE delivery_id=?",
+                (now + delay_seconds, now_iso, error[:4000], delivery_id),
+            )
+
+    def mark_delivery_final_failure(self, delivery_id: str, error: str) -> None:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE deliveries SET status='FAILED_FINAL', updated_at=?, last_error=?, attempts=attempts+1 WHERE delivery_id=?",
+                (now_iso, error[:4000], delivery_id),
+            )
+
+    def delivery_summary(self, message_id: str) -> dict[str, int]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT status, COUNT(*) AS c FROM deliveries WHERE message_id=? GROUP BY status", (message_id,)
+            ).fetchall()
+        counts = {row["status"]: int(row["c"]) for row in rows}
+        return {
+            "sent": counts.get("SENT", 0),
+            "pending": counts.get("PENDING", 0),
+            "retryable": counts.get("RETRY", 0),
+            "final_failed": counts.get("FAILED_FINAL", 0),
+        }
+
+    def next_delivery_delays(self, message_id: str) -> list[float]:
+        now = time.time()
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT next_attempt_at FROM deliveries WHERE message_id=? AND status='RETRY' ORDER BY next_attempt_at",
+                (message_id,),
+            ).fetchall()
+        return [max(0.0, float(row["next_attempt_at"]) - now) for row in rows]
+
+    def delivery_error_summary(self, message_id: str) -> str:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT kind, recipient, status, last_error FROM deliveries WHERE message_id=? AND status!='SENT'",
+                (message_id,),
+            ).fetchall()
+        parts = [f"{r['kind']} {r['recipient']}: {r['status']} {r['last_error'] or ''}" for r in rows]
+        return "; ".join(parts)[:4000] or "Pending deliveries"
+
+    def refresh_forward_status(self, message_id: str) -> None:
+        summary = self.delivery_summary(message_id)
+        with self._connect() as conn:
+            alert_total = conn.execute("SELECT COUNT(*) AS c FROM deliveries WHERE message_id=? AND kind='ALERT'", (message_id,)).fetchone()["c"]
+            original_failed = conn.execute("SELECT COUNT(*) AS c FROM deliveries WHERE message_id=? AND kind='ORIGINAL' AND status='FAILED_FINAL'", (message_id,)).fetchone()["c"]
+            alert_failed = conn.execute("SELECT COUNT(*) AS c FROM deliveries WHERE message_id=? AND kind='ALERT' AND status='FAILED_FINAL'", (message_id,)).fetchone()["c"]
+            alert_retry = conn.execute("SELECT COUNT(*) AS c FROM deliveries WHERE message_id=? AND kind='ALERT' AND status IN ('PENDING','RETRY')", (message_id,)).fetchone()["c"]
+            original_pending = conn.execute("SELECT COUNT(*) AS c FROM deliveries WHERE message_id=? AND kind='ORIGINAL' AND status IN ('PENDING','RETRY')", (message_id,)).fetchone()["c"]
+            if original_failed:
+                status = "ORIGINAL_FAILED"
+            elif original_pending:
+                status = "ORIGINAL_PENDING"
+            elif alert_total and alert_failed:
+                status = "ORIGINAL_SENT_ALERT_FAILED"
+            elif alert_total and alert_retry:
+                status = "ORIGINAL_SENT_ALERT_PENDING"
+            elif alert_total:
+                status = "ORIGINAL_AND_ALERT_SENT"
+            else:
+                status = "ORIGINAL_SENT"
+            conn.execute("UPDATE messages SET forward_status=?, forward_error=? WHERE id=?", (status, self.delivery_error_summary(message_id) or None, message_id))
+
+    def queue_stats(self) -> dict[str, int]:
+        with self._connect() as conn:
+            rows = conn.execute("SELECT state, COUNT(*) AS c FROM queue_jobs GROUP BY state").fetchall()
+        return {row["state"]: int(row["c"]) for row in rows}
+
+    @staticmethod
+    def _queue_row(row: sqlite3.Row) -> dict[str, Any]:
+        result = dict(row)
+        result["recipients"] = json.loads(result.pop("recipients_json"))
+        return result
 
     def list_messages(self, limit: int = 100) -> list[dict[str, Any]]:
         limit = min(max(limit, 1), 500)

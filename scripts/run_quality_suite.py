@@ -45,7 +45,7 @@ def main() -> int:
     parser.add_argument("--api-url", default="http://127.0.0.1:8000")
     parser.add_argument("--smtp-timeout", type=float, default=60.0, help="SMTP client response timeout in seconds")
     parser.add_argument("--data", default="test-data/quality_suite.json")
-    parser.add_argument("--wait-seconds", type=float, default=20.0)
+    parser.add_argument("--wait-seconds", type=float, default=None, help="Maximum wait for async processing; default is sized to the suite")
     args = parser.parse_args()
 
     cases = json.loads(Path(args.data).read_text(encoding="utf-8"))
@@ -59,7 +59,11 @@ def main() -> int:
         message_ids[message_id] = case
         print(f"  sent {case['id']}")
 
-    deadline = time.time() + args.wait_seconds
+    # The gateway processes messages asynchronously in the durable queue.
+    # Size the default wait to the suite instead of using the old 20s MVP timeout.
+    wait_seconds = args.wait_seconds if args.wait_seconds is not None else max(120.0, len(cases) * 4.0)
+    deadline = time.time() + wait_seconds
+    print(f"Waiting up to {wait_seconds:.0f}s for async processing...")
     results = {}
     while time.time() < deadline and len(results) < len(cases):
         try:
@@ -73,6 +77,9 @@ def main() -> int:
             if message_id in message_ids:
                 results[message_id] = row
         if len(results) < len(cases):
+            elapsed = time.time() - (deadline - wait_seconds)
+            if len(results) and int(elapsed) % 10 < 1:
+                print(f"  processed {len(results)}/{len(cases)}")
             time.sleep(0.5)
 
     print("\nResults")
