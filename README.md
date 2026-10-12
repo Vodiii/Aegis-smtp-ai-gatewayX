@@ -1,4 +1,4 @@
-# AI SMTP Gateway MVP v0.8.3
+# AI SMTP Gateway MVP v0.8.4
 
 SMTP security gateway for hackathon MVP.
 
@@ -157,3 +157,24 @@ python scripts/run_p0_failure_suite.py
 ```
 
 The suite validates concurrent duplicate enqueue, per-recipient partial failure, stale queue recovery, and the SMTP crash boundary. It intentionally documents the product as **at-least-once** across a crash that occurs after downstream acceptance but before the local `SENT` transaction commits.
+
+
+## Mock emergency-call backend (v0.8.4)
+
+The cybersecurity UI can show a list of mock emergency services next to a threat message and submit a simulated call request. This feature is deliberately mock-only: it has no telephony SDK, does not dial phone numbers, and makes no outbound call request. All displayed numbers use `TEST-*` placeholders.
+
+- `GET /api/emergency-services` — returns the dropdown options (`real_calls_enabled: false`).
+- `POST /api/messages/{record_id}/emergency-calls` — records a simulated call for a message classified as a threat. JSON body: `{ "service_id": "police", "requested_by": "operator-1", "notes": "Optional note" }`. `requested_by` and `notes` are optional.
+- `GET /api/messages/{record_id}/emergency-calls` — returns the persisted simulation history for that message.
+
+A successful POST returns HTTP 201 and `status: "SIMULATED"`, `provider: "MOCK"`, and `real_call_placed: false`. A non-threat message returns HTTP 409; an unknown message returns 404; an unknown service ID returns 422. Call request records are stored in SQLite and survive application/container restarts as long as the `gateway_data` volume is preserved.
+
+Example request:
+
+```bash
+curl -X POST http://localhost:8000/api/messages/REPLACE_WITH_RECORD_ID/emergency-calls \
+  -H "Content-Type: application/json" \
+  -d '{"service_id":"police","requested_by":"operator-1","notes":"Demo only"}'
+```
+
+This is an audit-friendly demonstration stub, not a real emergency-dispatch integration. Before any production telephony integration, service directory, authorization, confirmation, and auditable provider-side delivery semantics must be designed separately.

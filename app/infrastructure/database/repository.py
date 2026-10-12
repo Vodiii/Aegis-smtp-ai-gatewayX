@@ -137,6 +137,29 @@ class MessageRepository:
             )
             conn.execute("CREATE INDEX IF NOT EXISTS idx_deliveries_due ON deliveries(status, next_attempt_at)")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_deliveries_message ON deliveries(message_id)")
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS emergency_call_requests (
+                    id TEXT PRIMARY KEY,
+                    message_id TEXT NOT NULL,
+                    service_id TEXT NOT NULL,
+                    service_name TEXT NOT NULL,
+                    service_number TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    provider_reference TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    requested_by TEXT,
+                    notes TEXT,
+                    created_at TEXT NOT NULL,
+                    real_call_placed INTEGER NOT NULL DEFAULT 0,
+                    provider_message TEXT NOT NULL
+                )
+                """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_emergency_calls_message "
+                "ON emergency_call_requests(message_id, created_at DESC)"
+            )
 
     @staticmethod
     def make_delivery_key(raw_message: bytes, mail_from: str, recipients: list[str]) -> str:
@@ -523,6 +546,67 @@ class MessageRepository:
         with self._connect() as conn:
             row = conn.execute("SELECT * FROM messages WHERE id = ?", (record_id,)).fetchone()
         return self._row(row) if row else None
+
+    def create_emergency_call_request(
+        self,
+        *,
+        message_id: str,
+        service_id: str,
+        service_name: str,
+        service_number: str,
+        provider: str,
+        provider_reference: str,
+        status: str,
+        requested_by: str | None,
+        notes: str | None,
+        created_at: str,
+        real_call_placed: bool,
+        provider_message: str,
+    ) -> dict[str, Any]:
+        """Persist an emergency-call action (currently mock-only)."""
+        call_id = str(uuid.uuid4())
+        with self._connect() as conn:
+            conn.execute(
+                """INSERT INTO emergency_call_requests(
+                    id, message_id, service_id, service_name, service_number,
+                    provider, provider_reference, status, requested_by, notes,
+                    created_at, real_call_placed, provider_message
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    call_id,
+                    message_id,
+                    service_id,
+                    service_name,
+                    service_number,
+                    provider,
+                    provider_reference,
+                    status,
+                    requested_by,
+                    notes,
+                    created_at,
+                    int(real_call_placed),
+                    provider_message,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM emergency_call_requests WHERE id = ?", (call_id,)
+            ).fetchone()
+        return self._emergency_call_row(row)
+
+    def list_emergency_call_requests(self, message_id: str) -> list[dict[str, Any]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM emergency_call_requests WHERE message_id = ? "
+                "ORDER BY created_at DESC, id DESC",
+                (message_id,),
+            ).fetchall()
+        return [self._emergency_call_row(row) for row in rows]
+
+    @staticmethod
+    def _emergency_call_row(row: sqlite3.Row) -> dict[str, Any]:
+        result = dict(row)
+        result["real_call_placed"] = bool(result["real_call_placed"])
+        return result
 
     def to_processing_result(self, record_id: str) -> ProcessingResult | None:
         row = self.get(record_id)
