@@ -61,7 +61,7 @@ def test_duplicate_enqueue_is_atomic_under_concurrency(tmp_path):
     def submit() -> None:
         try:
             results.append(repo.enqueue_message(raw, "sender@local.test", ["user@local.test"], key))
-        except Exception as exc:  # pragma: no cover - safety assertion
+        except Exception as exc:  # pragma: no cover - проверка безопасности
             errors.append(exc)
 
     threads = [threading.Thread(target=submit) for _ in range(8)]
@@ -128,24 +128,26 @@ def test_crash_window_is_explicitly_at_least_once(tmp_path):
     original_mark = repo.mark_delivery_sent
 
     def accepted_then_crash(_delivery_id: str) -> None:
-        # Downstream has accepted the message, then the process dies before the
-        # local SENT state is committed. This is the unavoidable SMTP boundary.
+        # Почтовый сервер принял сообщение, но процесс упал до сохранения локального
+        # состояния SENT. Это неизбежное окно неопределённости в SMTP-доставке.
         raise SystemExit("simulated crash after downstream acceptance")
 
     def send_one(_sender: str, recipient: str, _raw: bytes, _host: str, _port: int) -> None:
         calls.append(recipient)
 
     worker._send_one = send_one
+    # В тесте подменяем метод репозитория, чтобы смоделировать падение после SMTP-приёма.
     repo.mark_delivery_sent = accepted_then_crash  # type: ignore[method-assign]
     with pytest.raises(SystemExit):
         worker._deliver_due(message_id, {"sender": "sender@local.test", "attempts": 1, "job_id": "job"})
 
+    # Восстанавливаем исходный метод репозитория после тестовой подмены.
     repo.mark_delivery_sent = original_mark  # type: ignore[method-assign]
     assert calls == ["user@local.test"]
     assert repo.delivery_summary(message_id)["pending"] == 1
 
-    # Recovery retries the durable PENDING record. The system is therefore
-    # at-least-once, not exactly-once, across an arbitrary process crash.
+    # При восстановлении система повторяет сохранённую запись PENDING. Поэтому после
+    # произвольного падения процесса гарантия — at-least-once, а не exactly-once.
     worker._deliver_due(message_id, {"sender": "sender@local.test", "attempts": 2, "job_id": "job"})
     assert calls == ["user@local.test", "user@local.test"]
     assert repo.delivery_summary(message_id)["sent"] == 1

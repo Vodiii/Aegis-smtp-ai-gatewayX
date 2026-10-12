@@ -59,8 +59,8 @@ def main() -> int:
         message_ids[message_id] = case
         print(f"  sent {case['id']}")
 
-    # The gateway processes messages asynchronously in the durable queue.
-    # Size the default wait to the suite instead of using the old 20s MVP timeout.
+    # Gateway обрабатывает сообщения асинхронно через постоянную очередь.
+    # Время ожидания подбирается под размер набора, а не под старый лимит MVP в 20 секунд.
     wait_seconds = args.wait_seconds if args.wait_seconds is not None else max(120.0, len(cases) * 4.0)
     deadline = time.time() + wait_seconds
     print(f"Waiting up to {wait_seconds:.0f}s for async processing...")

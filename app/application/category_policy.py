@@ -4,8 +4,8 @@ import re
 
 from app.domain.models import EmailDocument, ThreatCategory
 
-# This policy is deliberately narrow. It resolves only two recurring overlaps seen
-# in the 70-case regression suite without replacing the AI classifier.
+# Эта политика намеренно узкая. Она устраняет только два повторявшихся пересечения категорий
+# из регрессионного набора на 70 случаев и не заменяет классификатор ИИ.
 _DATA_OR_REPUTATION_PATTERN = re.compile(
     r"(?:залью|выложу|опубликую|распространю|слив(?:ать|ом)?|опубликовать)"
     r".{0,100}(?:переписк|фото|скриншот|личн(?:ые|ых)\s+данн|данн|репутац|информац)"
@@ -73,9 +73,9 @@ def apply_category_policy(
     """
     text = f"{email.subject}\n{email.text}"
 
-    # Clear extortion/blackmail is ILLEGAL unless the message contains the more
-    # specific data/reputation disclosure scenario, which is intentionally
-    # classified as OTHER_THREAT by this project taxonomy.
+    # Явное вымогательство или шантаж относится к ILLEGAL, кроме более узкого сценария
+    # угрозы раскрыть данные или навредить репутации: по нашей таксономии он намеренно
+    # классифицируется как OTHER_THREAT.
     if category == ThreatCategory.OTHER_THREAT:
         if _EXTORTION_PATTERN.search(text) and not _DATA_OR_REPUTATION_PATTERN.search(text):
             return ThreatCategory.ILLEGAL, "category policy: explicit extortion/blackmail takes precedence over generic OTHER_THREAT"
@@ -88,17 +88,17 @@ def apply_category_policy(
         if _CYBER_OR_VIRUS_PATTERN.search(text) and not _EXPLICIT_TECH_EVENT_PATTERN.search(text):
             return ThreatCategory.OTHER_THREAT, "category policy: cyber/virus vector without explicit physical technogenic event is OTHER_THREAT"
 
-    # Regression boundary from the agreed test taxonomy: an explosive hazard
-    # in metro/transport without explicit terrorist intent is TECHNOGENIC.
-    # A message that adds demands, hostage-taking, mass-casualty intent, or
-    # explicit terrorist context remains TERRORISM. This does not create an AI call.
+    # Граница из согласованной тестовой таксономии: угроза взрыва в метро или транспорте
+    # без явного террористического намерения относится к TECHNOGENIC.
+    # Если в сообщении есть требования, захват заложников, намерение вызвать массовые жертвы
+    # или явный террористический контекст, категория остаётся TERRORISM. Новый вызов ИИ не выполняется.
     if category == ThreatCategory.TERRORISM:
         if (_TRANSPORT_EXPLOSIVE_PATTERN.search(text)
                 and not _TERRORISM_INTENT_PATTERN.search(text)):
             return ThreatCategory.TECHNOGENIC, "category policy: transport explosive hazard without explicit terrorist intent is TECHNOGENIC"
 
-    # A broad/mass attack formulation is more specific than a generic ILLEGAL
-    # label. Keep this narrow so ordinary personal arson/threats remain ILLEGAL.
+    # Формулировка о широкомасштабном или массовом нападении конкретнее общей категории ILLEGAL.
+    # Правило оставляем узким, чтобы обычные личные угрозы и поджоги сохраняли категорию ILLEGAL.
     if category == ThreatCategory.ILLEGAL:
         if _TERRORISM_MASS_ATTACK_PATTERN.search(text) and not _PHYSICAL_ILLEGAL_PATTERN.search(text):
             return ThreatCategory.TERRORISM, "category policy: broad/mass attack intent takes precedence over generic ILLEGAL"

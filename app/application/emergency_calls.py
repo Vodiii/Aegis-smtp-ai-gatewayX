@@ -7,8 +7,8 @@ from typing import Any
 from app.infrastructure.database.repository import MessageRepository
 
 
-# Deliberately non-dialable placeholders. This feature is mock-only and never
-# connects to a telephone network or an external telephony provider.
+# Используются специально фиктивные номера, по которым нельзя позвонить.
+# Функция работает только в режиме имитации и не подключается к телефонной сети или провайдеру связи.
 MOCK_EMERGENCY_SERVICES: tuple[dict[str, Any], ...] = (
     {
         "id": "police",

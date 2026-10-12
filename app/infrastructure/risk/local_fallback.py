@@ -5,8 +5,8 @@ from app.domain.models import Classification, EmailDocument, GatewaySettings, Th
 from app.infrastructure.risk.engine import RiskEngine
 from app.infrastructure.risk.normalizer import normalize
 
-# Deliberate violent/explosive intent is treated as terrorism in the
-# emergency fallback because there is no AI available to resolve intent.
+# При резервной обработке явное намерение применить насилие или взрывчатку
+# считается TERRORISM, поскольку ИИ недоступен и уточнить намерение некому.
 _TERRORISM_INTENT = re.compile(
     r"\b(взорву|взорвать|подорву|подорвать)\b",
     re.IGNORECASE,
@@ -39,9 +39,9 @@ def classify_local_fallback(
     risk = engine.assess(email)
     text = normalize(f"{email.subject}\n{email.text}").normalized
 
-    # If Risk Engine sees strong benign context, retain benign classification.
-    # This prevents an emergency fallback from flagging news/history merely
-    # because they contain words such as "террорист" or "взрыв".
+    # Если Risk Engine обнаружил сильные признаки безопасного контекста, сохраняем BENIGN.
+    # Это не позволяет резервному режиму помечать новости или исторические тексты
+    # только из-за слов вроде «террорист» или «взрыв».
     benign_context = any(
         marker in text
         for marker in (
@@ -76,8 +76,8 @@ def classify_local_fallback(
     elif _TECHNOGENIC_PATTERNS.search(text):
         category = ThreatCategory.TECHNOGENIC
 
-    # A high local risk with no category-specific match is still a threat;
-    # OTHER_THREAT is the safest catch-all when AI is unavailable.
+    # Высокий локальный риск остаётся угрозой, даже если правило не определило категорию.
+    # При недоступном ИИ в таком случае безопаснее использовать OTHER_THREAT.
     if category is None and risk.requires_ai and risk.score >= settings.risk_ai_threshold:
         category = ThreatCategory.OTHER_THREAT
 

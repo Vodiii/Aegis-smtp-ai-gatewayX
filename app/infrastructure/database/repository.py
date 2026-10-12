@@ -406,7 +406,7 @@ class MessageRepository:
         if not message:
             raise KeyError(message_id)
         alert = message["destination"] if message["action"] == "DELIVER_AND_ALERT" else None
-        # The settings-bound hosts are injected through init below.
+        # Хосты, связанные с настройками, передаются через инициализацию ниже.
         self.ensure_delivery_records(message_id, message["recipients"], alert)
 
     def configure_delivery_endpoints(self, settings: Any) -> None:

@@ -60,7 +60,7 @@ class RiskEngine:
             self.model.predict(normalized.normalized),
             self.model.predict(normalized.obfuscated_variant),
         )
-        # Char model participates in the gate only when obfuscation is actually present.
+        # Символьная модель участвует в фильтре только при наличии настоящей обфускации.
         char_signal = char_probability if normalized.obfuscation_detected else 0.0
 
         lexical_risk = max(keywords.score, phrases.score, intent.score)
@@ -74,11 +74,11 @@ class RiskEngine:
 
         has_threat_signal = bool(keywords.matched or phrases.matched or intent.matched)
         has_obfuscation = bool(normalized.obfuscation_detected)
-        # High-confidence benign contexts are allowed to bypass threat keywords only
-        # when no explicit direct-threat intent is present.
-        # A benign context can bypass AI only when there are no threat keywords at all.
-        # This deliberately keeps suspicious-but-benign messages with threat vocabulary
-        # on the AI path, preserving recall and the conservative cascade contract.
+        # Контекст с высокой уверенностью в безопасности может перекрыть ключевые слова угрозы
+        # только при отсутствии явного прямого намерения угрожать.
+        # Пропустить ИИ на основании безопасного контекста можно, только если вообще нет ключевых слов угрозы.
+        # Поэтому подозрительные, но потенциально безвредные сообщения с такой лексикой
+        # всё равно направляются в ИИ. Это сохраняет полноту обнаружения и осторожность каскада.
         safe_benign = (
             bool(benign_strong.matched)
             and not keywords.matched
@@ -87,7 +87,7 @@ class RiskEngine:
             and not has_obfuscation
         )
 
-        # Ambiguous content stays on AI. This is the safety boundary we optimize around.
+        # Неоднозначное содержимое отправляем в ИИ. Это граница безопасности, на которую рассчитан каскад.
         requires_ai = not safe_benign
 
         reasons: list[str] = []

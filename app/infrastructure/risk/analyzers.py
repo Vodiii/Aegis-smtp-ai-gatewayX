@@ -36,8 +36,8 @@ THREAT_PHRASES = (
     r"\b(угрожаю|угроза).{0,80}\b(убийством|взрывом|нападением|поджогом)\b",
 )
 
-# Direct threat-intent patterns are used ONLY as an AI gate signal. They do not
-# classify the category and never by themselves produce a final benign verdict.
+# Признаки прямого намерения угрожать используются ТОЛЬКО как сигнал для вызова ИИ.
+# Они не определяют категорию и сами по себе никогда не дают итоговый вердикт BENIGN.
 THREAT_INTENT_PATTERNS = (
     r"\bтебя\s+(достанем|достанут|найду|найд[её]м)\b",
     r"\bпожалеешь\b",
@@ -47,8 +47,8 @@ THREAT_INTENT_PATTERNS = (
     r"\b(you\s+will\s+regret|this\s+will\s+be\s+the\s+last)\b",
 )
 
-# Strongly benign contexts. A FAST verdict is allowed only when these contexts
-# are present and no direct threat-intent / obfuscation / threat phrase exists.
+# Контексты с сильными признаками безопасности. Решение FAST допустимо только если
+# такие контексты присутствуют и нет прямого намерения угрожать, обфускации или угрожающих фраз.
 BENIGN_STRONG_PATTERNS = (
     r"\bвчера\b.{0,80}\b(произошел|произошла|произошли)\b",
     r"\b(авария|угроза)\s+уже\s+(устранена|миновала|закончилась)\b",
@@ -173,7 +173,7 @@ def strong_benign_context(text: NormalizedText, subject: str = "") -> SignalResu
 
 
 def benign_context_score(text: NormalizedText) -> float:
-    # Preserve the old public score semantics for compatibility.
+    # Сохраняем прежний смысл публичной оценки для обратной совместимости.
     hits = sum(1 for pattern in BENIGN_STRONG_PATTERNS if re.search(pattern, text.normalized, re.IGNORECASE))
     return min(0.75, 0.22 * hits)
 

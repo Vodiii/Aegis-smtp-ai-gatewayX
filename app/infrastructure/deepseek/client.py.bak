@@ -120,8 +120,8 @@ class DeepSeekClient:
             try:
                 threat = self._detect_threat(key, email)
 
-                # If the first stage says BENIGN but strong deterministic signals
-                # contradict it, perform a focused re-check of the threat gate.
+                # Если первый этап вернул BENIGN, но сильные детерминированные признаки
+                # этому противоречат, выполняем целевую повторную проверку наличия угрозы.
                 if not threat.is_threat:
                     signals = detect_high_signal_conflicts(email.subject, email.text)
                     if signals:
