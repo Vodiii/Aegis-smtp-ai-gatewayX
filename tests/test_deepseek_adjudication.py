@@ -36,8 +36,8 @@ def test_benign_conflict_triggers_threat_adjudication_then_category(monkeypatch)
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(
         subject="Предупреждение",
         text="В сообщении содержится прямая угроза взрыва и захвата заложников с целью массового нападения.",
@@ -63,8 +63,8 @@ def test_adjudication_false_keeps_non_threat(monkeypatch):
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(
         subject="Новость", text="Отчёт о прошлом событии и словах, процитированных в новости.",
     ))
@@ -103,8 +103,8 @@ def test_technogenic_current_warning_is_treated_as_threat(monkeypatch):
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(
         subject="Опасность на производстве",
         text="Поступило предупреждение о возможной техногенной аварии на предприятии из-за неисправности оборудования. Риск относится к промышленной инфраструктуре.",

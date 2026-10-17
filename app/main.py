@@ -22,11 +22,13 @@ repository = MessageRepository(config.gateway.db_path, config.gateway.data_dir)
 repository.configure_delivery_endpoints(config.gateway)
 classifier = DeepSeekClient(
     config.deepseek_primary_key,
-    config.deepseek_secondary_key,
     model=config.gateway.deepseek_model,
     timeout_seconds=config.gateway.deepseek_api_timeout_seconds,
     max_retries=config.gateway.deepseek_max_retries,
     retry_backoff_seconds=config.gateway.deepseek_retry_backoff_seconds,
+    batch_size=config.gateway.deepseek_batch_size,
+    review_batch_wait_seconds=config.gateway.deepseek_review_batch_wait_seconds,
+    review_batch_size=config.gateway.deepseek_review_batch_size,
 )
 policy = PolicyEngine(config.gateway)
 risk_engine = RiskEngine(config.gateway)
@@ -41,7 +43,7 @@ smtp_controller = Controller(
     enable_SMTPUTF8=True,
 )
 
-app = FastAPI(title="AI SMTP Gateway", version="0.8.4")
+app = FastAPI(title="AI SMTP Gateway", version="0.8.10")
 app.include_router(build_router(config, repository))
 
 
@@ -55,3 +57,5 @@ def start_gateway() -> None:
 def stop_gateway() -> None:
     smtp_controller.stop()
     worker.stop()
+    # Закрываем пул сетевых соединений после завершения всех потоков обработки.
+    classifier.close()

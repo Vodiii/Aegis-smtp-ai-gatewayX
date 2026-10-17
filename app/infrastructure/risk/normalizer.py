@@ -48,7 +48,7 @@ def normalize(text: str) -> NormalizedText:
         and bool(re.search(r"[A-Za-zА-Яа-яЁё]", token))
         and bool(re.search(r"[A-Za-z]", token))
         and bool(re.search(r"[А-Яа-яЁё]", token))
-        for token in re.split(r"[\s,;:()\[\]{}<>/\\]+", original)
+        for token in re.split(r"[\s,;:()\[\]{}<>/\\_\-]+", original)
     )
 
     # Подозрительную замену букв цифрами ищем только ВНУТРИ слова.

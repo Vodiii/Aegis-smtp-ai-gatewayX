@@ -8,3 +8,10 @@ def test_parse_html_fallback_and_attachment_meta():
     assert "World" in result.text
     assert len(result.attachments) == 1
     assert result.attachments[0].filename == "note.txt"
+
+
+def test_hyphenated_latin_cyrillic_compound_is_not_obfuscation():
+    from app.infrastructure.risk.normalizer import normalize
+
+    result = normalize("HTML-письмо без угроз")
+    assert result.obfuscation_detected is False

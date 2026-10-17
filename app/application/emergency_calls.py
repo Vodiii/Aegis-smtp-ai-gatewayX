@@ -42,7 +42,7 @@ MOCK_EMERGENCY_SERVICES: tuple[dict[str, Any], ...] = (
 
 
 class EmergencyServiceError(Exception):
-    """Base class for expected emergency-call API errors."""
+    """Базовый класс ожидаемых ошибок API имитации вызова экстренных служб."""
 
 
 class EmergencyMessageNotFound(EmergencyServiceError):
@@ -58,7 +58,7 @@ class EmergencyServiceNotFound(EmergencyServiceError):
 
 
 class MockEmergencyCallProvider:
-    """Simulate a call request without dialing or making any network request."""
+    """Имитировать запрос вызова без набора номера и сетевых запросов."""
 
     provider_name = "MOCK"
 

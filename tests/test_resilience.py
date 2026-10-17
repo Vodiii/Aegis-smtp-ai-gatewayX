@@ -33,39 +33,33 @@ def test_deepseek_retries_transient_503(monkeypatch):
             "evidence": [],
         })
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash", retry_backoff_seconds=0)
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash", retry_backoff_seconds=0)
     result = client.classify(EmailDocument(subject="Hi", text="hello"))
 
     assert result.category == ThreatCategory.BENIGN
     assert len(calls) == 2
 
 
-def test_deepseek_uses_secondary_key_after_primary_failure(monkeypatch):
+def test_deepseek_uses_only_the_configured_api_key(monkeypatch):
     seen_auth = []
 
     def fake_post(*args, **kwargs):
-        auth = kwargs["headers"]["Authorization"]
-        seen_auth.append(auth)
-        if auth.endswith("primary"):
-            return httpx.Response(
-                401,
-                text="bad key",
-                request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
-            )
-        return _response({
-            "is_threat": False,
-            "confidence": 0.99,
-            "reason": "benign",
-            "evidence": [],
-        })
+        seen_auth.append(kwargs["headers"]["Authorization"])
+        return httpx.Response(
+            401,
+            text="invalid key",
+            request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
+        )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", "secondary", "deepseek-flash", retry_backoff_seconds=0)
-    result = client.classify(EmailDocument(subject="Hi", text="hello"))
-
-    assert result.category == ThreatCategory.BENIGN
-    assert seen_auth == ["Bearer primary", "Bearer secondary"]
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash", retry_backoff_seconds=0)
+    try:
+        result = client.classify(EmailDocument(subject="Hi", text="hello"))
+        assert result.source == "FALLBACK"
+        assert seen_auth == ["Bearer primary"]
+    finally:
+        client.close()
 
 
 def test_invalid_ai_response_falls_back_without_losing_delivery():
@@ -77,14 +71,14 @@ def test_invalid_ai_response_falls_back_without_losing_delivery():
         )
 
     monkeypatch = __import__("pytest").MonkeyPatch()
-    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
     try:
-        client = DeepSeekClient("primary", None, "deepseek-flash", retry_backoff_seconds=0)
+        client = DeepSeekClient("primary", "deepseek-flash", retry_backoff_seconds=0)
         result = client.classify(EmailDocument(subject="Hello", text="normal text"))
         assert result.source == "FALLBACK"
-        assert result.category == ThreatCategory.BENIGN
+        assert result.category == ThreatCategory.OTHER_THREAT
         decision = PolicyEngine(GatewaySettings()).decide(result)
-        assert decision.action == Action.DELIVER
+        assert decision.action == Action.DELIVER_AND_ALERT
         assert decision.review is True
     finally:
         monkeypatch.undo()

@@ -10,7 +10,6 @@ from app.domain.models import GatewaySettings
 class AppConfig:
     gateway: GatewaySettings
     deepseek_primary_key: str | None
-    deepseek_secondary_key: str | None
 
 
 def _float(name: str, default: float) -> float:
@@ -62,6 +61,12 @@ def load_config() -> AppConfig:
         risk_require_ai_on_obfuscation=os.getenv("RISK_REQUIRE_AI_ON_OBFUSCATION", "true").lower() in {"1", "true", "yes", "on"},
         risk_training_path=os.getenv("RISK_TRAINING_PATH", "./config/risk_training.json"),
         queue_poll_interval_seconds=_float("QUEUE_POLL_INTERVAL_SECONDS", 0.25),
+        queue_batch_max_messages=_int("QUEUE_BATCH_MAX_MESSAGES", 20),
+        queue_batch_wait_seconds=_float("QUEUE_BATCH_WAIT_SECONDS", 0.25),
+        deepseek_batch_size=_int("DEEPSEEK_BATCH_SIZE", 10),
+        deepseek_review_batch_size=_int("DEEPSEEK_REVIEW_BATCH_SIZE", 10),
+        deepseek_review_batch_wait_seconds=_float("DEEPSEEK_REVIEW_BATCH_WAIT_SECONDS", 0.10),
+        queue_worker_count=_int("QUEUE_WORKER_COUNT", 2),
         queue_retry_base_seconds=_float("QUEUE_RETRY_BASE_SECONDS", 1.0),
         queue_retry_max_seconds=_float("QUEUE_RETRY_MAX_SECONDS", 60.0),
         queue_stale_seconds=_float("QUEUE_STALE_SECONDS", 120.0),
@@ -72,5 +77,4 @@ def load_config() -> AppConfig:
     return AppConfig(
         gateway=gateway,
         deepseek_primary_key=os.getenv("DEEPSEEK_API_KEY_PRIMARY"),
-        deepseek_secondary_key=os.getenv("DEEPSEEK_API_KEY_SECONDARY"),
     )

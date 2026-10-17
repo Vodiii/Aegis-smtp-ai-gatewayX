@@ -28,6 +28,16 @@ CATEGORY_KEYWORDS = {
     ),
 }
 
+# Компактные формы вычисляются один раз при импорте модуля, а не для каждого сообщения.
+_COMPACT_CATEGORY_KEYWORDS = tuple(
+    (
+        term,
+        re.sub(r"[^\w\u0400-\u04ff]+", "", term, flags=re.UNICODE),
+    )
+    for terms in CATEGORY_KEYWORDS.values()
+    for term in terms
+)
+
 THREAT_PHRASES = (
     r"\bзавтра\b.{0,80}\b(взрыв|теракт|подрыв|авария|нападение|взорву|подорву|убью|украду)\b",
     r"\b(будет|произойдет|произойд[её]т|ожидается|возможен|возможна|возможное)\b.{0,100}\b(взрыв|авария|нападение|утечка|теракт)\b",
@@ -50,7 +60,7 @@ THREAT_INTENT_PATTERNS = (
 # Контексты с сильными признаками безопасности. Решение FAST допустимо только если
 # такие контексты присутствуют и нет прямого намерения угрожать, обфускации или угрожающих фраз.
 BENIGN_STRONG_PATTERNS = (
-    r"\bвчера\b.{0,80}\b(произошел|произошла|произошли)\b",
+    r"\bвчера\b.{0,80}\b(произош[её]л|произошла|произошли)\b",
     r"\b(авария|угроза)\s+уже\s+(устранена|миновала|закончилась)\b",
     r"\b(убийство)\s+раскрыто\b",
     r"\bпредотвратили\b.{0,80}\bтеракт\b",
@@ -65,11 +75,11 @@ BENIGN_STRONG_PATTERNS = (
     r"\bв\s+договоре\b",
     r"\bна\s+выборах\b",
     r"\bэто\s+цитата,?\s+а\s+не\s+призыв\b",
-    r"\bкак\s+террорист\s+с\s+дедлайнами\b",
+    r"\b(?:как\s+террорист\s+с\s+дедлайнами|дедлайны?\b.{0,40}\bкак\s+(?:у\s+)?террорист\w*)\b",
     r"\bубью\s+время\b",
     r"\bвзорвал\s+чат\b",
     r"\bзадача\s*[—-]\s*(настоящий\s+)?убийца\b",
-    r"\bуничтожу\s+этот\s+экзамен\b",
+    r"\bуничтожу\s+(?:этот\s+)?экзамен\b",
     r"\bбез\s+угроз\b",
     r"\bнет\s+(угроз|намерения|призывов)\b",
     r"\bопасности\s+нет\b",
@@ -80,6 +90,13 @@ BENIGN_STRONG_PATTERNS = (
     r"\bгипотетическ\w*\s+угроз\w*\b",
     r"\bпосле\s+тренировк\w*\b",
     r"\bсудебн\w*\s+новост\w*\b",
+)
+
+# Только явно выраженный безопасный контекст может перевесить найденные ключевые слова.
+# Общие упоминания прошлого, обучения и расследования сюда не входят: они остаются на пути ИИ.
+BENIGN_CONTEXT_OVERRIDE_PATTERNS = tuple(
+    BENIGN_STRONG_PATTERNS[index]
+    for index in (0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 20, 21)
 )
 
 BUSINESS_SUBJECT_PATTERNS = (
@@ -128,12 +145,13 @@ def _matches(patterns: tuple[str, ...], text: str, limit: int = 8) -> list[str]:
 def keyword_signals(text: NormalizedText) -> SignalResult:
     compact_variant = re.sub(r"[^\w\u0400-\u04ff]+", "", text.obfuscated_variant, flags=re.UNICODE)
     haystacks = (text.normalized, text.obfuscated_variant, text.compact, compact_variant)
+    compact_haystacks = (text.compact, compact_variant)
     matched: list[str] = []
-    for terms in CATEGORY_KEYWORDS.values():
-        for term in terms:
-            compact_term = re.sub(r"[^\w\u0400-\u04ff]+", "", term, flags=re.UNICODE)
-            if any(term in haystack for haystack in haystacks) or any(compact_term in haystack for haystack in (text.compact, compact_variant)):
-                matched.append(term)
+    for term, compact_term in _COMPACT_CATEGORY_KEYWORDS:
+        if any(term in haystack for haystack in haystacks) or any(
+            compact_term in haystack for haystack in compact_haystacks
+        ):
+            matched.append(term)
     unique = list(dict.fromkeys(matched))
     if not unique:
         return SignalResult(tuple(), 0.0)
@@ -179,7 +197,7 @@ def benign_context_score(text: NormalizedText) -> float:
 
 
 class CharNgramModel:
-    """Tiny character-trigram Naive Bayes model trained from a local JSON dataset."""
+    """Компактная модель Наивного Байеса по символьным триграммам из локального JSON-набора."""
 
     def __init__(self, samples: list[dict]) -> None:
         self.alpha = 1.0
@@ -194,6 +212,21 @@ class CharNgramModel:
             self.ngram_counts[label].update(grams)
             self.total_ngrams[label] += len(grams)
         self.vocab = set(self.ngram_counts["threat"]) | set(self.ngram_counts["benign"])
+        total_classes = sum(self.class_counts.values())
+        self.log_priors = {
+            cls: math.log((self.class_counts[cls] + 1) / (total_classes + 2))
+            for cls in ("threat", "benign")
+        }
+        self.log_likelihood: dict[str, dict[str, float]] = {}
+        self.unknown_log_likelihood: dict[str, float] = {}
+        vocab_size = len(self.vocab)
+        for cls in ("threat", "benign"):
+            denominator = self.total_ngrams[cls] + self.alpha * vocab_size
+            self.unknown_log_likelihood[cls] = math.log(self.alpha / denominator)
+            self.log_likelihood[cls] = {
+                gram: math.log((self.ngram_counts[cls][gram] + self.alpha) / denominator)
+                for gram in self.vocab
+            }
 
     @staticmethod
     def _grams(text: str) -> list[str]:
@@ -201,22 +234,18 @@ class CharNgramModel:
         return [padded[i:i + 3] for i in range(max(0, len(padded) - 2))]
 
     def predict(self, text: str) -> float:
-        total_classes = sum(self.class_counts.values())
-        if not self.vocab or not total_classes:
+        if not self.vocab or not self.class_counts:
             return 0.5
 
         grams = self._grams(text.casefold())
-        priors = {
-            c: (self.class_counts[c] + 1) / (total_classes + 2)
-            for c in ("threat", "benign")
-        }
-        logp = {c: math.log(priors[c]) for c in priors}
-        vocab_size = len(self.vocab)
+        logp = dict(self.log_priors)
 
+        # Вероятности триграмм заранее рассчитаны при загрузке модели.
+        # На письме остаётся только складывать готовые значения логарифмов.
         for cls in logp:
-            denominator = self.total_ngrams[cls] + self.alpha * vocab_size
-            for gram in grams:
-                logp[cls] += math.log((self.ngram_counts[cls][gram] + self.alpha) / denominator)
+            likelihood = self.log_likelihood[cls]
+            unknown = self.unknown_log_likelihood[cls]
+            logp[cls] += sum(likelihood.get(gram, unknown) for gram in grams)
 
         max_log = max(logp.values())
         exp_values = {c: math.exp(logp[c] - max_log) for c in logp}

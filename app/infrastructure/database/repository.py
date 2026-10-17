@@ -563,7 +563,7 @@ class MessageRepository:
         real_call_placed: bool,
         provider_message: str,
     ) -> dict[str, Any]:
-        """Persist an emergency-call action (currently mock-only)."""
+        """Сохранить действие имитации вызова экстренной службы."""
         call_id = str(uuid.uuid4())
         with self._connect() as conn:
             conn.execute(

@@ -42,7 +42,7 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
 
     @router.get("/emergency-services")
     def list_emergency_services():
-        """Return the mock-only emergency-service directory for the frontend dropdown."""
+        """Вернуть каталог тестовых служб для выпадающего списка интерфейса."""
         return emergency_calls.list_services()
 
     @router.post(
@@ -50,7 +50,7 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
         status_code=status.HTTP_201_CREATED,
     )
     def create_emergency_call(record_id: str, payload: EmergencyCallRequest):
-        """Record a simulated call request. This endpoint never places a real call."""
+        """Записать имитацию вызова. Этот endpoint никогда не выполняет реальный звонок."""
         try:
             return emergency_calls.request_call(
                 message_id=record_id,
@@ -70,7 +70,7 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
 
     @router.get("/messages/{record_id}/emergency-calls")
     def list_emergency_calls(record_id: str):
-        """Return the persisted call-simulation history for one message."""
+        """Вернуть сохранённую историю имитаций вызова для одного сообщения."""
         try:
             return {
                 "message_id": record_id,

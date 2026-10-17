@@ -64,12 +64,12 @@ def apply_category_policy(
     email: EmailDocument,
     category: ThreatCategory,
 ) -> tuple[ThreatCategory, str | None]:
-    """Apply narrow, deterministic category precedence after AI classification.
+    """Применить узкие детерминированные правила категорий после классификации ИИ.
 
-    The policy never changes BENIGN, never removes a threat, and never creates a
-    new AI call. It only corrects two high-confidence taxonomy overlaps:
-    data/reputation disclosure and cyber/virus actions without a physical
-    technogenic mechanism.
+    Политика не изменяет BENIGN, не удаляет угрозы и не создаёт новые вызовы ИИ.
+    Она исправляет только два пересечения таксономии с высокой уверенностью:
+    угрозы раскрытия данных/репутации и кибердействия/вирусы без явного
+    физического техногенного механизма.
     """
     text = f"{email.subject}\n{email.text}"
 
@@ -97,10 +97,11 @@ def apply_category_policy(
                 and not _TERRORISM_INTENT_PATTERN.search(text)):
             return ThreatCategory.TECHNOGENIC, "category policy: transport explosive hazard without explicit terrorist intent is TECHNOGENIC"
 
-    # Формулировка о широкомасштабном или массовом нападении конкретнее общей категории ILLEGAL.
-    # Правило оставляем узким, чтобы обычные личные угрозы и поджоги сохраняли категорию ILLEGAL.
-    if category == ThreatCategory.ILLEGAL:
+    # Формулировка о широкомасштабном или массовом нападении конкретнее общей категории.
+    # Применяем правило и к OTHER_THREAT: модель может распознать угрозу, но выбрать слишком общую категорию.
+    # Личные угрозы и обычные поджоги сохраняют свою категорию.
+    if category in {ThreatCategory.ILLEGAL, ThreatCategory.OTHER_THREAT}:
         if _TERRORISM_MASS_ATTACK_PATTERN.search(text) and not _PHYSICAL_ILLEGAL_PATTERN.search(text):
-            return ThreatCategory.TERRORISM, "category policy: broad/mass attack intent takes precedence over generic ILLEGAL"
+            return ThreatCategory.TERRORISM, "category policy: broad/mass attack intent takes precedence over generic threat category"
 
     return category, None

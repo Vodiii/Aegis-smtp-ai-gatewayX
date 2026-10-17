@@ -115,10 +115,11 @@ def test_stale_processing_job_is_recovered_after_restart(tmp_path):
 
 
 def test_crash_window_is_explicitly_at_least_once(tmp_path):
-    """SMTP cannot guarantee exactly-once across a crash after downstream 250.
+    """SMTP не гарантирует строго однократную доставку при сбое после downstream 250.
 
-    This test documents the remaining boundary: a delivery accepted downstream
-    but not durably marked SENT before process death is retried after recovery.
+    Тест описывает оставшееся ограничение: если целевой сервер принял письмо,
+    но процесс завершился до сохранения состояния SENT, после восстановления
+    доставки оно будет отправлено повторно.
     """
     repo = MessageRepository(str(tmp_path / "db.sqlite"), str(tmp_path / "data"))
     message_id = _seed_message(repo, ["user@local.test"])

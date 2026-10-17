@@ -51,6 +51,13 @@ def test_broad_fire_attack_overrides_generic_illegal():
     assert reason
 
 
+def test_broad_fire_attack_overrides_generic_other_threat():
+    email = EmailDocument(text="Скоро всё сгорит. Готовьтесь к большой огненной атаке на наши цели.")
+    category, reason = apply_category_policy(email, ThreatCategory.OTHER_THREAT)
+    assert category == ThreatCategory.TERRORISM
+    assert reason
+
+
 def test_personal_arson_does_not_become_terrorism():
     email = EmailDocument(text="Подожгу твою машину, если не заплатишь.")
     category, reason = apply_category_policy(email, ThreatCategory.ILLEGAL)

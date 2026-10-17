@@ -17,14 +17,14 @@ LOGGER = logging.getLogger("app.queue")
 
 
 class DeliveryWorker:
-    """Durable background worker for classification and downstream delivery.
+    """Фоновый обработчик классификации и доставки писем.
 
-    The SMTP transaction only persists the message into SQLite + raw spool and
-    returns 250. The worker then performs classification and delivery with
-    per-recipient durable state. This gives the gateway at-least-once delivery
-    semantics with crash recovery; SMTP itself cannot provide exactly-once
-    delivery across a process crash between downstream acceptance and state
-    persistence.
+    SMTP-транзакция сохраняет письмо в SQLite и файловое хранилище, после чего
+    возвращает ответ 250. Worker выполняет классификацию и доставку с отдельным
+    постоянным состоянием для каждого получателя. При аварийном завершении
+    гарантируется повторная обработка, а не строго однократная доставка: SMTP
+    не может закрыть окно сбоя между приёмом письма целевым сервером и записью
+    локального состояния доставки.
     """
 
     def __init__(self, repository: MessageRepository, processor: EmailProcessor, settings: GatewaySettings) -> None:
@@ -32,62 +32,162 @@ class DeliveryWorker:
         self.processor = processor
         self.settings = settings
         self._stop_event = threading.Event()
-        self._thread: threading.Thread | None = None
+        self._threads: list[threading.Thread] = []
         self.loop_token = settings.gateway_loop_token
 
     def start(self) -> None:
-        if self._thread and self._thread.is_alive():
+        if any(thread.is_alive() for thread in self._threads):
             return
         self.repository.recover_stale_jobs(self.settings.queue_stale_seconds)
         self._stop_event.clear()
-        self._thread = threading.Thread(target=self._run, name="delivery-worker", daemon=True)
-        self._thread.start()
-        LOGGER.info("Delivery worker started")
+        worker_count = max(1, int(self.settings.queue_worker_count))
+        self._threads = [
+            threading.Thread(
+                target=self._run,
+                args=(index,),
+                name=f"delivery-worker-{index + 1}",
+                daemon=True,
+            )
+            for index in range(worker_count)
+        ]
+        for thread in self._threads:
+            thread.start()
+        LOGGER.info("Фоновые обработчики доставки запущены: количество=%d", worker_count)
 
     def stop(self) -> None:
         self._stop_event.set()
-        if self._thread:
-            self._thread.join(timeout=max(2.0, self.settings.queue_poll_interval_seconds * 4))
-        LOGGER.info("Delivery worker stopped")
+        for thread in self._threads:
+            thread.join()
+        LOGGER.info("Все фоновые обработчики доставки остановлены")
 
-    def _run(self) -> None:
+    def _run(self, worker_index: int = 0) -> None:
         while not self._stop_event.is_set():
-            job = self.repository.claim_next_job()
-            if not job:
+            first_job = self.repository.claim_next_job()
+            if not first_job:
                 self._stop_event.wait(self.settings.queue_poll_interval_seconds)
                 continue
+
+            jobs = self._collect_batch(first_job)
             try:
-                self._process_job(job)
+                self._process_jobs(jobs)
             except Exception:
-                LOGGER.exception("Unhandled queue job failure job_id=%s", job["job_id"])
-                if int(job["attempts"]) >= self.settings.queue_max_attempts:
-                    self.repository.dead_letter_job(job["job_id"], "Maximum queue processing attempts exceeded")
-                else:
-                    self.repository.retry_job(
-                        job["job_id"],
-                        self._backoff_seconds(job["attempts"]),
-                        "Unhandled worker exception",
-                    )
+                LOGGER.exception("Необработанная ошибка пакета очереди, число заданий=%d", len(jobs))
+                for job in jobs:
+                    self._handle_job_failure(job, "Unhandled worker batch exception")
+
+    def _collect_batch(self, first_job: dict[str, Any]) -> list[dict[str, Any]]:
+        """Собрать до заданного числа писем, не задерживая пакет дольше лимита."""
+        jobs = [first_job]
+        batch_limit = max(1, self.settings.queue_batch_max_messages)
+        wait_limit = max(0.0, self.settings.queue_batch_wait_seconds)
+        deadline = time.monotonic() + wait_limit
+
+        while len(jobs) < batch_limit and not self._stop_event.is_set():
+            next_job = self.repository.claim_next_job()
+            if next_job:
+                jobs.append(next_job)
+                continue
+
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            # Короткие интервалы опроса позволяют подхватить письма, которые
+            # поступили во время ожидания, и быстро завершить неполный пакет.
+            self._stop_event.wait(min(0.05, remaining))
+
+        LOGGER.info(
+            "Пакет очереди собран: сообщений=%d, размер_пакета=%d, ожидание_мс=%d",
+            len(jobs),
+            batch_limit,
+            int(wait_limit * 1000),
+        )
+        return jobs
 
     def _process_job(self, job: dict[str, Any]) -> None:
-        raw = self.repository.read_spooled_message(job["raw_path"])
-        existing = self.repository.find_by_delivery_key(job["delivery_key"])
+        """Обработать одно задание через тот же путь, что используется для пакета."""
+        self._process_jobs([job])
 
-        if existing:
-            message_id = existing["id"]
-            result = self.repository.to_processing_result(message_id)
-            if result is None:
-                raise RuntimeError(f"Processed message {message_id} cannot be reconstructed")
-            LOGGER.info("Resuming durable job=%s from message=%s", job["job_id"], message_id)
-        else:
-            message_id, email, result = self.processor.process(raw, delivery_key=job["delivery_key"])
-            self.repository.ensure_delivery_records(
-                message_id,
-                email.recipients,
-                result.decision.action == Action.DELIVER_AND_ALERT and self.settings.mode != "AUDIT"
-                and result.decision.destination or None,
-            )
+    def _process_jobs(self, jobs: list[dict[str, Any]]) -> None:
+        """Подготовить письма, пакетно классифицировать AI-кандидатов и доставить их."""
+        entries: list[dict[str, Any]] = []
+        prepared_entries: list[dict[str, Any]] = []
 
+        for job in jobs:
+            try:
+                raw = self.repository.read_spooled_message(job["raw_path"])
+                existing = self.repository.find_by_delivery_key(job["delivery_key"])
+                if existing:
+                    message_id = existing["id"]
+                    result = self.repository.to_processing_result(message_id)
+                    if result is None:
+                        raise RuntimeError(
+                            f"Обработанное сообщение {message_id} не удалось восстановить"
+                        )
+                    LOGGER.info(
+                        "Возобновление задания очереди=%s по сообщению=%s",
+                        job["job_id"], message_id,
+                    )
+                    entries.append({
+                        "job": job,
+                        "message_id": message_id,
+                        "result": result,
+                        "prepared": None,
+                    })
+                else:
+                    prepared = self.processor.prepare(raw, delivery_key=job["delivery_key"])
+                    entry = {"job": job, "prepared": prepared, "message_id": None, "result": None}
+                    entries.append(entry)
+                    prepared_entries.append(entry)
+            except Exception as exc:
+                LOGGER.exception("Не удалось подготовить задание очереди=%s", job["job_id"])
+                self._handle_job_failure(job, str(exc))
+
+        if prepared_entries:
+            try:
+                prepared_messages = [entry["prepared"] for entry in prepared_entries]
+                classifications = self.processor.classify_prepared_batch(prepared_messages)
+                if len(classifications) != len(prepared_entries):
+                    raise RuntimeError("Количество классификаций не совпало с числом писем")
+            except Exception as exc:
+                LOGGER.exception("Не удалось классифицировать пакет из %d писем", len(prepared_entries))
+                for entry in prepared_entries:
+                    self._handle_job_failure(entry["job"], f"Batch classification failed: {exc}")
+                entries = [entry for entry in entries if entry not in prepared_entries]
+            else:
+                for entry, classification in zip(prepared_entries, classifications):
+                    job = entry["job"]
+                    try:
+                        message_id, email, result = self.processor.finish_prepared(
+                            entry["prepared"], classification
+                        )
+                        self.repository.ensure_delivery_records(
+                            message_id,
+                            email.recipients,
+                            result.decision.destination
+                            if result.decision.action == Action.DELIVER_AND_ALERT
+                            and self.settings.mode != "AUDIT"
+                            else None,
+                        )
+                        entry["message_id"] = message_id
+                        entry["result"] = result
+                    except Exception as exc:
+                        LOGGER.exception("Не удалось сохранить результат для задания=%s", job["job_id"])
+                        self._handle_job_failure(job, str(exc))
+                        entries.remove(entry)
+
+        for entry in entries:
+            job = entry["job"]
+            message_id = entry["message_id"]
+            if not message_id:
+                continue
+            try:
+                self._complete_delivery_job(message_id, job)
+            except Exception as exc:
+                LOGGER.exception("Ошибка доставки для задания=%s", job["job_id"])
+                self._handle_job_failure(job, str(exc))
+
+    def _complete_delivery_job(self, message_id: str, job: dict[str, Any]) -> None:
+        """Продолжить независимую доставку оригинала и alert для одного сообщения."""
         self.repository.ensure_delivery_records_from_message(message_id)
         self._deliver_due(message_id, job)
 
@@ -100,6 +200,17 @@ class DeliveryWorker:
         else:
             delay = self._next_delay_for_message(message_id)
             self.repository.retry_job(job["job_id"], delay, self.repository.delivery_error_summary(message_id))
+
+    def _handle_job_failure(self, job: dict[str, Any], error: str) -> None:
+        """Поставить задание на повтор или в окончательную очередь ошибок."""
+        if int(job["attempts"]) >= self.settings.queue_max_attempts:
+            self.repository.dead_letter_job(job["job_id"], error)
+        else:
+            self.repository.retry_job(
+                job["job_id"],
+                self._backoff_seconds(job["attempts"]),
+                error,
+            )
 
     def _deliver_due(self, message_id: str, job: dict[str, Any]) -> None:
         deliveries = self.repository.due_deliveries(message_id)

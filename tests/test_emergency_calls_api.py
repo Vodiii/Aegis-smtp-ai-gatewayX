@@ -26,7 +26,6 @@ def _client_with_repository(tmp_path):
     config = AppConfig(
         gateway=settings,
         deepseek_primary_key=None,
-        deepseek_secondary_key=None,
     )
     app = FastAPI()
     app.include_router(build_router(config, repository))
@@ -142,7 +141,6 @@ def test_emergency_call_history_survives_repository_restart(tmp_path):
     restarted_config = AppConfig(
         gateway=GatewaySettings(),
         deepseek_primary_key=None,
-        deepseek_secondary_key=None,
     )
     app = FastAPI()
     app.include_router(build_router(restarted_config, restarted_repository))

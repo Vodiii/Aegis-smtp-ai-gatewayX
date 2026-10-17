@@ -76,9 +76,11 @@ def classify_local_fallback(
     elif _TECHNOGENIC_PATTERNS.search(text):
         category = ThreatCategory.TECHNOGENIC
 
-    # Высокий локальный риск остаётся угрозой, даже если правило не определило категорию.
-    # При недоступном ИИ в таком случае безопаснее использовать OTHER_THREAT.
-    if category is None and risk.requires_ai and risk.score >= settings.risk_ai_threshold:
+    # Если письмо требует анализа ИИ, а ИИ недоступен, нельзя молча считать его безопасным
+    # только из-за отсутствия совпадения с локальными шаблонами. Передаём его на ручную
+    # проверку как OTHER_THREAT. Это может увеличить число оповещений при аварии ИИ,
+    # зато не пропускает неоднозначные письма без уведомления службы безопасности.
+    if category is None and risk.requires_ai:
         category = ThreatCategory.OTHER_THREAT
 
     if category is None:
