@@ -93,7 +93,16 @@ Important category boundaries for consistency:
 - Personal threats against a person are ILLEGAL when they describe harm such as
   killing, injuring, kidnapping, extortion, or a clearly unlawful act.
 - Broad mass-violence language or attacks on multiple targets are TERRORISM.
-- Environmental poisoning without an industrial accident mechanism is OTHER_THREAT.
+- A bomb/explosion threat against a public place combined with an ultimatum, payment demand,
+  hostage-taking, or mass-attack intent is TERRORISM, not merely TECHNOGENIC.
+- A transport explosive threat WITHOUT an ultimatum, hostage-taking, or other terrorist intent
+  is TECHNOGENIC for this gateway's taxonomy.
+- Planned power-grid outages, industrial accidents, chemical releases, and poisoning a municipal
+  water intake are TECHNOGENIC. Poisoning a river without an industrial mechanism is OTHER_THREAT.
+- Direct personal violence such as “Найду тебя и убью” or “We will hurt your family” is ILLEGAL.
+- Publishing customer data after hacking is OTHER_THREAT unless a physical disaster is explicitly intended.
+- “Выложу данные клиентов”, “We will hurt your family if you don't pay”, and obfuscated “в3рвём ТЦ ... если не выплатят”
+  must be classified by their harmful intent and primary mechanism, not collapsed into generic OTHER_THREAT.
 - Historical, fictional, quoted, educational, metaphorical, or completed events remain BENIGN.
 
 The category field must contain exactly one label: TERRORISM, TECHNOGENIC, ILLEGAL,

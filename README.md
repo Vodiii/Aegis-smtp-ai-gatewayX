@@ -1,4 +1,4 @@
-# AI SMTP Gateway MVP v0.8.11
+# AI SMTP Gateway MVP v0.8.12
 
 SMTP security gateway for hackathon MVP.
 
@@ -16,7 +16,7 @@ Tune concurrent submissions explicitly when needed:
 python scripts/run_quality_suite.py --data test-data/external_qa_suite.json --send-concurrency 20
 ```
 
-Use `--send-concurrency 1` to restore sequential submission. The script reports SMTP submission time separately from total suite wall time and Gateway-reported per-message processing times. Concurrent submission reduces sender-side waiting; it does not itself reduce DeepSeek latency or correct classification categories.
+Use `--send-concurrency 1` to restore sequential submission. The script reports SMTP submission time, the measured full-suite wall time, the worker classification span, and per-message latency statistics. By default it waits for the expected final delivery status as well as the classification record. Use `--classification-only` for a classification-only run. The sum of per-message durations may exceed wall time because durations overlap during concurrent/batched processing; it is not the test elapsed time.
 
 ## Architecture
 
@@ -134,13 +134,13 @@ The external regression suite from the tester contains 70 cases: 30 threat cases
 python scripts/run_quality_suite.py --data test-data/external_qa_suite.json
 ```
 
-The suite prints classification, routing decision, AI usage and processing timing for each message, plus total/average/min/max gateway processing time.
+The suite prints classification, routing decision, actual delivery status and AI usage for each message. Timing labels distinguish full test wall time from the sum/average/p50/p95 of overlapping per-message durations. Default mode waits for terminal delivery statuses; use `--classification-only` to omit that wait.
 
 
 ## Risk Gate benchmark
 The benchmark contains 150 benign and 40 synthetic threat messages across all four threat categories. It reports FAST/AI routing by benign cohort and fails if any synthetic threat bypasses the AI gate.
 
-Version: v0.8.10
+Version: v0.8.12
 
 ## v0.8.2 reliability
 SMTP DATA now durably spools the message into SQLite + a fsynced raw file and returns 250 before classification/delivery. A background worker provides crash recovery, durable queue state, per-recipient delivery records, retries, and idempotent enqueue semantics. Delivery is at-least-once across process crashes.
