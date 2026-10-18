@@ -30,8 +30,8 @@ def test_two_stage_classification(monkeypatch):
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(subject="test", text="text"))
 
     assert result.category == ThreatCategory.TECHNOGENIC
@@ -58,8 +58,8 @@ def test_non_threat_stops_before_category(monkeypatch):
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(subject="test", text="обычное письмо"))
 
     assert result.category == ThreatCategory.BENIGN
@@ -86,8 +86,8 @@ def test_unified_classification_uses_one_call(monkeypatch):
             request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
-    client = DeepSeekClient("primary", None, "deepseek-flash")
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
     result = client.classify(EmailDocument(subject="test", text="Найду тебя и убью."))
 
     assert result.category == ThreatCategory.ILLEGAL
@@ -122,9 +122,32 @@ def test_category_policy_correction_does_not_add_ai_call(monkeypatch):
                 request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
             )
 
-        monkeypatch.setattr(httpx, "post", fake_post)
-        client = DeepSeekClient("primary", None, "deepseek-flash")
+        monkeypatch.setattr(httpx.Client, "post", fake_post)
+        client = DeepSeekClient("primary", "deepseek-flash")
         result = client.classify(EmailDocument(text=text))
 
         assert result.category.value == expected_category
         assert len(calls) == 1
+
+
+def test_http_request_counter_tracks_actual_calls(monkeypatch):
+    def fake_post(*args, **kwargs):
+        body = {
+            "is_threat": True,
+            "category": "TERRORISM",
+            "confidence": 0.95,
+            "threat_confidence": 0.96,
+            "reason": "mock threat",
+            "evidence": ["угроза"],
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(body, ensure_ascii=False)}}]},
+            request=httpx.Request("POST", "https://api.deepseek.com/chat/completions"),
+        )
+
+    monkeypatch.setattr(httpx.Client, "post", fake_post)
+    client = DeepSeekClient("primary", "deepseek-flash")
+    client.classify(EmailDocument(subject="Предупреждение", text="Есть угроза."))
+    assert client.request_count == 1
+    client.close()

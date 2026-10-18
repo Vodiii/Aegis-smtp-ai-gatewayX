@@ -127,6 +127,12 @@ class GatewaySettings:
     risk_require_ai_on_obfuscation: bool = True
     risk_training_path: str = "./config/risk_training.json"
     queue_poll_interval_seconds: float = 0.25
+    queue_batch_max_messages: int = 20
+    queue_batch_wait_seconds: float = 0.25
+    deepseek_batch_size: int = 10
+    deepseek_review_batch_size: int = 10
+    deepseek_review_batch_wait_seconds: float = 0.10
+    queue_worker_count: int = 2
     queue_retry_base_seconds: float = 1.0
     queue_retry_max_seconds: float = 60.0
     queue_stale_seconds: float = 120.0

@@ -79,8 +79,8 @@ class SmtpGatewayHandler:
             )
         decision = result.decision
 
-        # The original message is always delivered. In AUDIT mode the alert copy
-        # is suppressed, but the AI decision remains available in audit logs.
+        # Исходное письмо всегда доставляется. В режиме AUDIT копия-уведомление
+        # не отправляется, но решение ИИ остаётся доступным в журнале аудита.
         self._send_original_or_fail(record_id, envelope, original_recipients)
 
         if self.settings.mode != "AUDIT" and decision.action == Action.DELIVER_AND_ALERT and decision.destination:
@@ -145,8 +145,8 @@ class SmtpGatewayHandler:
 
     def _build_alert_copy(self, raw_message: bytes, destination: str) -> bytes:
         message = BytesParser(policy=policy.default).parsebytes(raw_message)
-        # Only the alert copy is annotated; the original recipient gets the
-        # original bytes unchanged.
+        # Служебные заголовки добавляются только к копии-уведомлению;
+        # исходный получатель получает оригинальные байты без изменений.
         message["X-AI-SMTP-Gateway-Alert"] = "1"
         message["X-AI-SMTP-Gateway-Token"] = self.loop_token
         message["X-AI-SMTP-Gateway-Alert-Recipient"] = destination

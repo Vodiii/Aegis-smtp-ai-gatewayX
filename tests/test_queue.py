@@ -45,7 +45,7 @@ def test_delivery_state_is_per_recipient(tmp_path):
     job_id, _ = repo.enqueue_message(raw, "s@local.test", ["a@local.test", "b@local.test"], key)
     job = repo.claim_next_job()
     assert job["job_id"] == job_id
-    # Seed a processed message row through the old repository API.
+    # Создаём запись обработанного сообщения через старый интерфейс репозитория.
     from app.domain.models import Action, Classification, EmailDocument, PolicyDecision, ProcessingResult, ThreatCategory
     result = ProcessingResult(
         classification=Classification(category=ThreatCategory.BENIGN, is_threat=False, confidence=1.0),
@@ -104,7 +104,7 @@ def test_partial_delivery_failure_isolated_per_recipient(tmp_path):
 
     assert calls == ["a@local.test", "b@local.test"]
     rows = {r["recipient"]: r for r in repo.due_deliveries("m2")}
-    # a is no longer due because it was durably marked SENT; b remains retryable.
+    # Для a повтор уже не требуется: состояние SENT надёжно сохранено. Для b повтор всё ещё возможен.
     assert "a@local.test" not in rows
     assert rows["b@local.test"]["status"] == "RETRY"
 

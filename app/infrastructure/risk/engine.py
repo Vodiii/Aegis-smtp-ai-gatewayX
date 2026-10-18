@@ -8,6 +8,7 @@ from app.domain.models import EmailDocument, GatewaySettings, RiskAssessment
 from app.infrastructure.risk.analyzers import (
     CharNgramModel,
     benign_context_score,
+    BENIGN_CONTEXT_OVERRIDE_PATTERNS,
     keyword_signals,
     phrase_signals,
     strong_benign_context,
@@ -36,11 +37,12 @@ DEFAULT_TRAINING = [
 
 
 class RiskEngine:
-    """Conservative local gate.
+    """Консервативный локальный фильтр.
 
-    The gate may bypass AI only for high-confidence benign context. It must not
-    make a final threat verdict locally: anything suspicious or ambiguous goes
-    to DeepSeek. The tiny char model is only an obfuscation/generalization signal.
+    Он может обходить ИИ только при высокой уверенности в безопасном контексте.
+    Локально нельзя выносить окончательный вердикт об угрозе: подозрительные и
+    неоднозначные письма отправляются в DeepSeek. Символьная модель служит только
+    вспомогательным признаком обфускации и обобщения.
     """
 
     def __init__(self, settings: GatewaySettings) -> None:
@@ -56,11 +58,15 @@ class RiskEngine:
         benign = benign_context_score(normalized)
         benign_strong = strong_benign_context(normalized, email.subject)
 
-        char_probability = max(
-            self.model.predict(normalized.normalized),
-            self.model.predict(normalized.obfuscated_variant),
-        )
-        # Char model participates in the gate only when obfuscation is actually present.
+        char_probability = self.model.predict(normalized.normalized)
+        # Второй вариант нужен только для сообщений с признаками обфускации.
+        # Для обычного текста его результат не влияет на решение Risk Engine.
+        if normalized.obfuscation_detected:
+            char_probability = max(
+                char_probability,
+                self.model.predict(normalized.obfuscated_variant),
+            )
+        # Символьная модель участвует в фильтре только при наличии настоящей обфускации.
         char_signal = char_probability if normalized.obfuscation_detected else 0.0
 
         lexical_risk = max(keywords.score, phrases.score, intent.score)
@@ -74,20 +80,22 @@ class RiskEngine:
 
         has_threat_signal = bool(keywords.matched or phrases.matched or intent.matched)
         has_obfuscation = bool(normalized.obfuscation_detected)
-        # High-confidence benign contexts are allowed to bypass threat keywords only
-        # when no explicit direct-threat intent is present.
-        # A benign context can bypass AI only when there are no threat keywords at all.
-        # This deliberately keeps suspicious-but-benign messages with threat vocabulary
-        # on the AI path, preserving recall and the conservative cascade contract.
+        # Только явный и узкий набор безопасных контекстов может перекрыть отдельные ключевые слова.
+        # Общие исторические, учебные и расследовательские упоминания остаются на пути ИИ.
+        # Прямое намерение, угрожающая фраза или обфускация всегда требуют вызова ИИ.
+        explicit_safe_context = any(
+            pattern in BENIGN_CONTEXT_OVERRIDE_PATTERNS
+            for pattern in benign_strong.matched
+        )
         safe_benign = (
             bool(benign_strong.matched)
-            and not keywords.matched
+            and (not keywords.matched or explicit_safe_context)
             and not intent.matched
             and not phrases.matched
             and not has_obfuscation
         )
 
-        # Ambiguous content stays on AI. This is the safety boundary we optimize around.
+        # Неоднозначное содержимое отправляем в ИИ. Это граница безопасности, на которую рассчитан каскад.
         requires_ai = not safe_benign
 
         reasons: list[str] = []

@@ -79,7 +79,7 @@ class EmailParser:
             elif content_type == "text/html":
                 html_parts.append(_decode_part(part))
 
-        # Prefer plain text because it is the least ambiguous representation.
+        # Предпочитаем обычный текст: его интерпретация наименее неоднозначна.
         if plain_parts:
             body = "\n\n".join(plain_parts)
         else:

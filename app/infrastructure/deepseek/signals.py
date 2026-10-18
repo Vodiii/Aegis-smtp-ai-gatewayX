@@ -9,8 +9,8 @@ class ThreatSignal:
     phrases: tuple[str, ...]
 
 
-# Only high-signal phrases are used here. These are NOT a replacement for AI;
-# they are used to detect contradictions such as "strong threat wording + BENIGN".
+# Здесь используются только фразы с сильным сигналом. Они НЕ заменяют ИИ,
+# а помогают находить противоречия, например «явная угроза + BENIGN».
 TERRORISM_SIGNALS: tuple[str, ...] = (
     "угроза взрыва",
     "захват заложников",

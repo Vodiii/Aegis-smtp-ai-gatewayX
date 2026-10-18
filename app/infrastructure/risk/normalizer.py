@@ -35,25 +35,25 @@ def normalize(text: str) -> NormalizedText:
     normalized = re.sub(r"\s+", " ", value).strip()
     compact = re.sub(r"[^\w\u0400-\u04ff]+", "", normalized, flags=re.UNICODE)
 
-    # Secondary detection variant. Never replaces original content.
+    # Дополнительный вариант текста для обнаружения. Он никогда не заменяет оригинал.
     variant = normalized.translate(CONFUSABLES).translate(LEET)
     variant = re.sub(r"[\W_]+", " ", variant, flags=re.UNICODE)
     variant = re.sub(r"\s+", " ", variant).strip()
 
     tokens = re.findall(r"[A-Za-zА-Яа-яЁё0-9#@_$\-]+", original)
-    # Mixed scripts are suspicious only when Latin and Cyrillic letters touch.
-    # Normal hyphenated compounds such as "HTML-письмо" are not obfuscation.
+    # Смешение алфавитов считается подозрительным только при соприкосновении латинских
+    # и кириллических букв. Обычные слова через дефис, например «HTML-письмо», — не обфускация.
     mixed_token = any(
         bool(re.search(r"[A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё]", token))
         and bool(re.search(r"[A-Za-zА-Яа-яЁё]", token))
         and bool(re.search(r"[A-Za-z]", token))
         and bool(re.search(r"[А-Яа-яЁё]", token))
-        for token in re.split(r"[\s,;:()\[\]{}<>/\\]+", original)
+        for token in re.split(r"[\s,;:()\[\]{}<>/\\_\-]+", original)
     )
 
-    # Detect suspicious leetspeak only when substitutions occur INSIDE a word.
-    # Normal business identifiers such as PRJ-1000 or Invoice2026 should not
-    # be treated as obfuscation merely because they contain digits.
+    # Подозрительную замену букв цифрами ищем только ВНУТРИ слова.
+    # Обычные рабочие идентификаторы вроде PRJ-1000 или Invoice2026 не должны считаться
+    # обфускацией лишь потому, что содержат цифры.
     leet_token = False
     for token in tokens:
         compact_token = re.sub(r"[-_]+", "", token)

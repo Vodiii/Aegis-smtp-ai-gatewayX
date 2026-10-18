@@ -1,1 +1,1 @@
-"""Legacy package kept for compatibility; the SMTP handler lives in app.gateway."""
+"""Устаревший пакет оставлен для совместимости; SMTP-обработчик находится в app.gateway."""

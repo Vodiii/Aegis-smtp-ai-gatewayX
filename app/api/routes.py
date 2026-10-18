@@ -2,14 +2,28 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
+from app.application.emergency_calls import (
+    EmergencyCallService,
+    EmergencyMessageNotFound,
+    EmergencyServiceNotFound,
+    MessageIsNotThreat,
+)
 from app.infrastructure.config import AppConfig
 from app.infrastructure.database.repository import MessageRepository
 
 
+class EmergencyCallRequest(BaseModel):
+    service_id: str = Field(min_length=1, max_length=80, description="ID from GET /api/emergency-services")
+    requested_by: str | None = Field(default=None, max_length=120, description="Optional operator name or ID")
+    notes: str | None = Field(default=None, max_length=1000, description="Optional note for the audit log")
+
+
 def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
     router = APIRouter(prefix="/api")
+    emergency_calls = EmergencyCallService(repository)
 
     @router.get("/health")
     def health() -> dict[str, str]:
@@ -25,6 +39,47 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
         if result is None:
             raise HTTPException(status_code=404, detail="Message not found")
         return result
+
+    @router.get("/emergency-services")
+    def list_emergency_services():
+        """Вернуть каталог тестовых служб для выпадающего списка интерфейса."""
+        return emergency_calls.list_services()
+
+    @router.post(
+        "/messages/{record_id}/emergency-calls",
+        status_code=status.HTTP_201_CREATED,
+    )
+    def create_emergency_call(record_id: str, payload: EmergencyCallRequest):
+        """Записать имитацию вызова. Этот endpoint никогда не выполняет реальный звонок."""
+        try:
+            return emergency_calls.request_call(
+                message_id=record_id,
+                service_id=payload.service_id,
+                requested_by=payload.requested_by,
+                notes=payload.notes,
+            )
+        except EmergencyMessageNotFound:
+            raise HTTPException(status_code=404, detail="Message not found")
+        except MessageIsNotThreat:
+            raise HTTPException(
+                status_code=409,
+                detail="Emergency-service calls can only be requested for messages classified as threats",
+            )
+        except EmergencyServiceNotFound:
+            raise HTTPException(status_code=422, detail="Unknown emergency service ID")
+
+    @router.get("/messages/{record_id}/emergency-calls")
+    def list_emergency_calls(record_id: str):
+        """Вернуть сохранённую историю имитаций вызова для одного сообщения."""
+        try:
+            return {
+                "message_id": record_id,
+                "mode": "MOCK",
+                "real_calls_enabled": False,
+                "items": emergency_calls.list_requests(record_id),
+            }
+        except EmergencyMessageNotFound:
+            raise HTTPException(status_code=404, detail="Message not found")
 
     @router.get("/stats")
     def stats():
@@ -65,6 +120,10 @@ def build_router(config: AppConfig, repository: MessageRepository) -> APIRouter:
                 "max_attachments": gateway.max_attachments,
             },
             "allowed_recipient_domains": list(gateway.allowed_recipient_domains),
+            "emergency_calls": {
+                "mode": "MOCK",
+                "real_calls_enabled": False,
+            },
         }
 
     return router
