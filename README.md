@@ -1,6 +1,22 @@
-# AI SMTP Gateway MVP v0.8.10
+# AI SMTP Gateway MVP v0.8.11
 
 SMTP security gateway for hackathon MVP.
+
+## Concurrent external QA sender
+
+The external QA script submits messages concurrently instead of waiting for one SMTP transaction to finish before starting the next. The default concurrency is 10 simultaneous SMTP connections to avoid an unnecessarily large burst against the Gateway.
+
+```powershell
+python scripts/run_quality_suite.py --data test-data/external_qa_suite.json
+```
+
+Tune concurrent submissions explicitly when needed:
+
+```powershell
+python scripts/run_quality_suite.py --data test-data/external_qa_suite.json --send-concurrency 20
+```
+
+Use `--send-concurrency 1` to restore sequential submission. The script reports SMTP submission time separately from total suite wall time and Gateway-reported per-message processing times. Concurrent submission reduces sender-side waiting; it does not itself reduce DeepSeek latency or correct classification categories.
 
 ## Architecture
 
